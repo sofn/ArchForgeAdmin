@@ -178,3 +178,71 @@ export const updateDept = (data?: object) => {
 export const deleteDept = (data?: object) => {
   return http.request<Result>("post", "/dept/delete", { data });
 };
+
+// ===================== 参数设置 CRUD =====================
+
+/** 获取参数设置列表 */
+export const getConfigList = (data?: object) => {
+  return http.request<ResultTable>("post", "/config", { data });
+};
+
+/** 创建参数 */
+export const createConfig = (data?: object) => {
+  return http.request<Result>("post", "/config/create", { data });
+};
+
+/** 更新参数 */
+export const updateConfig = (data?: object) => {
+  return http.request<Result>("put", "/config/update", { data });
+};
+
+/** 删除参数 */
+export const deleteConfig = (data?: object) => {
+  return http.request<Result>("post", "/config/delete", { data });
+};
+
+// ===================== 通知公告 CRUD =====================
+
+/** 获取通知公告列表 */
+export const getNoticeList = (data?: object) => {
+  return http.request<ResultTable>("post", "/notice", { data });
+};
+
+/** 创建通知公告 */
+export const createNotice = (data?: object) => {
+  return http.request<Result>("post", "/notice/create", { data });
+};
+
+/** 更新通知公告 */
+export const updateNotice = (data?: object) => {
+  return http.request<Result>("put", "/notice/update", { data });
+};
+
+/** 删除通知公告 */
+export const deleteNotice = (data?: object) => {
+  return http.request<Result>("post", "/notice/delete", { data });
+};
+
+// ===================== 操作日志 =====================
+
+/** 删除操作日志 */
+export const deleteOperLog = (data?: object) => {
+  return http.request<Result>("post", "/operation-logs/delete", { data });
+};
+
+/** 清空操作日志 */
+export const clearOperLog = () => {
+  return http.request<Result>("post", "/operation-logs/clear", {});
+};
+
+// ===================== 登录日志 =====================
+
+/** 删除登录日志 */
+export const deleteLoginLog = (data?: object) => {
+  return http.request<Result>("post", "/login-logs/delete", { data });
+};
+
+/** 清空登录日志 */
+export const clearLoginLog = () => {
+  return http.request<Result>("post", "/login-logs/clear", {});
+};
