@@ -29,6 +29,14 @@ export default async ({ mode }: ConfigEnv): Promise<UserConfigExport> => {
           target: "http://localhost:8080",
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, "")
+        },
+        "/swagger-ui": {
+          target: "http://localhost:8080",
+          changeOrigin: true
+        },
+        "/v3/api-docs": {
+          target: "http://localhost:8080",
+          changeOrigin: true
         }
       },
       // 预热文件以提前转换和缓存结果，降低启动期间的初始页面加载时长并防止转换瀑布
