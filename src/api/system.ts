@@ -105,7 +105,7 @@ export const deleteUser = (data?: object) => {
 
 /** 更新用户状态 */
 export const updateUserStatus = (data?: object) => {
-  return http.request<Result>("patch", "/user/status", { data });
+  return http.request<Result>("post", "/user/status", { data });
 };
 
 /** 重置用户密码 */
@@ -137,7 +137,7 @@ export const deleteRole = (data?: object) => {
 
 /** 更新角色状态 */
 export const updateRoleStatus = (data?: object) => {
-  return http.request<Result>("patch", "/role/status", { data });
+  return http.request<Result>("post", "/role/status", { data });
 };
 
 /** 保存角色菜单权限 */
