@@ -17,6 +17,8 @@ import { useUserStoreHook } from "@/store/modules/user";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
+  // API基础路径，通过vite proxy代理到后端
+  baseURL: "/api",
   // 请求超时时间
   timeout: 10000,
   headers: {
