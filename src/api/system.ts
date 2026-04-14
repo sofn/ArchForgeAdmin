@@ -246,3 +246,10 @@ export const deleteLoginLog = (data?: object) => {
 export const clearLoginLog = () => {
   return http.request<Result>("post", "/login-logs/clear", {});
 };
+
+// ===================== 服务器监控 =====================
+
+/** 获取服务器监控信息 */
+export const getServerInfo = () => {
+  return http.request<Result>("get", "/server-info");
+};
