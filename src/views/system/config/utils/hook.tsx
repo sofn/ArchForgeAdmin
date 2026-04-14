@@ -144,7 +144,7 @@ export function useConfig() {
             if (title === "新增") {
               await createConfig(curData);
             } else {
-              await updateConfig({ ...curData, id: row?.configId });
+              await updateConfig({ ...curData, id: row?.id });
             }
             message(`您${title}了参数名称为${curData.configName}的这条数据`, {
               type: "success"

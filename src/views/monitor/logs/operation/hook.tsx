@@ -139,7 +139,11 @@ export function useRole(tableRef: Ref) {
 
   async function onSearch() {
     loading.value = true;
-    const { code, data } = await getOperationLogsList(toRaw(form));
+    const { code, data } = await getOperationLogsList({
+      ...toRaw(form),
+      currentPage: pagination.currentPage,
+      pageSize: pagination.pageSize
+    });
     if (code === 0) {
       dataList.value = data.list;
       pagination.total = data.total;

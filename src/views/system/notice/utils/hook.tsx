@@ -141,7 +141,7 @@ export function useNotice() {
             if (title === "新增") {
               await createNotice(curData);
             } else {
-              await updateNotice({ ...curData, id: row?.noticeId });
+              await updateNotice({ ...curData, id: row?.id });
             }
             message(`您${title}了公告标题为${curData.noticeTitle}的这条数据`, {
               type: "success"
