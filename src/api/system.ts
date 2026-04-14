@@ -85,3 +85,96 @@ export const getRoleMenu = (data?: object) => {
 export const getRoleMenuIds = (data?: object) => {
   return http.request<Result>("post", "/role-menu-ids", { data });
 };
+
+// ===================== 用户管理 CRUD =====================
+
+/** 创建用户 */
+export const createUser = (data?: object) => {
+  return http.request<Result>("post", "/user/create", { data });
+};
+
+/** 更新用户 */
+export const updateUser = (data?: object) => {
+  return http.request<Result>("put", "/user/update", { data });
+};
+
+/** 删除用户 */
+export const deleteUser = (data?: object) => {
+  return http.request<Result>("post", "/user/delete", { data });
+};
+
+/** 更新用户状态 */
+export const updateUserStatus = (data?: object) => {
+  return http.request<Result>("patch", "/user/status", { data });
+};
+
+/** 重置用户密码 */
+export const resetUserPassword = (data?: object) => {
+  return http.request<Result>("post", "/user/reset-password", { data });
+};
+
+/** 分配用户角色 */
+export const assignUserRole = (data?: object) => {
+  return http.request<Result>("post", "/user/assign-role", { data });
+};
+
+// ===================== 角色管理 CRUD =====================
+
+/** 创建角色 */
+export const createRole = (data?: object) => {
+  return http.request<Result>("post", "/role/create", { data });
+};
+
+/** 更新角色 */
+export const updateRole = (data?: object) => {
+  return http.request<Result>("put", "/role/update", { data });
+};
+
+/** 删除角色 */
+export const deleteRole = (data?: object) => {
+  return http.request<Result>("post", "/role/delete", { data });
+};
+
+/** 更新角色状态 */
+export const updateRoleStatus = (data?: object) => {
+  return http.request<Result>("patch", "/role/status", { data });
+};
+
+/** 保存角色菜单权限 */
+export const saveRoleMenu = (data?: object) => {
+  return http.request<Result>("post", "/role/save-menu", { data });
+};
+
+// ===================== 菜单管理 CRUD =====================
+
+/** 创建菜单 */
+export const createMenu = (data?: object) => {
+  return http.request<Result>("post", "/menu/create", { data });
+};
+
+/** 更新菜单 */
+export const updateMenu = (data?: object) => {
+  return http.request<Result>("put", "/menu/update", { data });
+};
+
+/** 删除菜单 */
+export const deleteMenu = (data?: object) => {
+  return http.request<Result>("post", "/menu/delete", { data });
+};
+
+// ===================== 部门管理 CRUD =====================
+
+/** 创建部门 */
+export const createDept = (data?: object) => {
+  return http.request<Result>("post", "/dept/create", { data });
+};
+
+/** 更新部门 */
+export const updateDept = (data?: object) => {
+  return http.request<Result>("put", "/dept/update", { data });
+};
+
+/** 删除部门 */
+export const deleteDept = (data?: object) => {
+  return http.request<Result>("post", "/dept/delete", { data });
+};
