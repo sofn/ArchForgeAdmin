@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-AppForgeAdmin is an admin management UI based on [vue-pure-admin](https://github.com/pure-admin/vue-pure-admin). It serves as the frontend for the AppForge backend management system.
+ArchSmithAdmin is an admin management UI based on [vue-pure-admin](https://github.com/pure-admin/vue-pure-admin). It serves as the frontend for the ArchSmith backend management system.
 
 ## Build Commands
 
