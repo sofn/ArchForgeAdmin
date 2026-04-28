@@ -51,6 +51,15 @@ const systemManagementRouter = {
         title: "menus.pureDept",
         roles: ["admin"]
       }
+    },
+    {
+      path: "/system/quartz/index",
+      name: "SystemQuartz",
+      meta: {
+        icon: "ri:time-line",
+        title: "menus.pureQuartz",
+        roles: ["admin"]
+      }
     }
   ]
 };
