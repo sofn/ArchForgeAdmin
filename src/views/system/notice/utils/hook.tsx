@@ -47,7 +47,10 @@ export function useNotice() {
       prop: "noticeType",
       width: 100,
       cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} type={row.noticeType === 1 ? "" : "warning"}>
+        <el-tag
+          size={props.size}
+          type={row.noticeType === 1 ? undefined : "warning"}
+        >
           {row.noticeType === 1 ? "通知" : "公告"}
         </el-tag>
       )

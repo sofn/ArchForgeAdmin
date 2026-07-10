@@ -3,7 +3,7 @@ import { http } from "@/utils/http";
 type Result = {
   code: number;
   message: string;
-  data?: Array<any>;
+  data?: any;
 };
 
 type ResultTable = {
@@ -19,6 +19,12 @@ type ResultTable = {
     /** 当前页数 */
     currentPage?: number;
   };
+};
+
+type ResultData = {
+  code: number;
+  message: string;
+  data?: any;
 };
 
 /** 获取系统管理-用户管理列表 */
@@ -74,6 +80,11 @@ export const getSystemLogsList = (data?: object) => {
 /** 获取系统监控-系统日志-根据 id 查日志详情 */
 export const getSystemLogsDetail = (data?: object) => {
   return http.request<Result>("post", "/system-logs-detail", { data });
+};
+
+/** 获取系统监控-缓存监控信息 */
+export const getCacheInfo = () => {
+  return http.request<ResultData>("get", "/cache-info");
 };
 
 /** 获取角色管理-权限-菜单权限 */

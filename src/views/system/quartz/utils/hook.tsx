@@ -193,7 +193,12 @@ export function useQuartz() {
       fullscreenIcon: true,
       closeOnClickModal: false,
       hideFooter: true,
-      contentRenderer: () => h(logView, { jobId: row.id, jobName: row.jobName })
+      contentRenderer: () =>
+        h(logView, {
+          key: `${row.id}-${Date.now()}`,
+          jobId: row.id,
+          jobName: row.jobName
+        } as any)
     });
   }
 

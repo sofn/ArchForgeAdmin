@@ -328,6 +328,9 @@ function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
     if (v?.children && v.children.length && !v.name)
       v.name = (v.children[0].name as string) + "Parent";
     if (v.meta?.frameSrc) {
+      if (v.meta?.isFrameSrcInternal && typeof window !== "undefined") {
+        v.meta.frameSrc = window.location.origin + v.meta.frameSrc;
+      }
       v.component = IFrame;
     } else {
       // 对后端传component组件路径和不传做兼容（如果后端传component组件路径，那么path可以随便写，如果不传，component组件路径会跟path保持一致）

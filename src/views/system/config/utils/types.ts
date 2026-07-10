@@ -1,4 +1,5 @@
 interface FormItemProps {
+  id?: number;
   configId?: number;
   configName: string;
   configKey: string;

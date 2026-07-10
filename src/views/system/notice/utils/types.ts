@@ -1,4 +1,5 @@
 interface FormItemProps {
+  id?: number;
   noticeId?: number;
   noticeTitle: string;
   noticeType: number;

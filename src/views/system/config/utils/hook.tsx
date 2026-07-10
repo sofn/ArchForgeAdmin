@@ -55,7 +55,10 @@ export function useConfig() {
       prop: "configType",
       width: 100,
       cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} type={row.configType === 1 ? "" : "info"}>
+        <el-tag
+          size={props.size}
+          type={row.configType === 1 ? undefined : "info"}
+        >
           {row.configType === 1 ? "是" : "否"}
         </el-tag>
       )
