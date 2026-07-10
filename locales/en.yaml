@@ -264,3 +264,8 @@ tableBar:
   purePinLeft: Pin Left
   purePinRight: Pin Right
   pureUnpin: Unpin
+repeat:
+  submit:
+    default: Please do not submit repeatedly, please try again later
+  uploadSuccess: Upload success
+  uploadFail: Upload failed

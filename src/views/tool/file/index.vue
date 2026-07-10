@@ -4,7 +4,9 @@ import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { getToken } from "@/utils/auth";
 import { message } from "@/utils/message";
+import { i18n } from "@/plugins/i18n";
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 import Delete from "~icons/ep/delete";
 import Download from "~icons/ep/download";
@@ -17,6 +19,7 @@ defineOptions({
 
 const formRef = ref();
 const uploadRef = ref();
+const { t } = useI18n();
 
 const {
   form,
@@ -41,17 +44,24 @@ const uploadHeaders = computed(() => {
   };
 });
 
+const uploadData = computed(() => {
+  const locale = i18n.global.locale as any;
+  return {
+    lang: typeof locale === "string" ? locale : locale.value
+  };
+});
+
 function handleUploadSuccess(response) {
   if (response.code === 0) {
-    message("上传成功", { type: "success" });
+    message(t("repeat.uploadSuccess"), { type: "success" });
     onSearch();
   } else {
-    message(response.message || "上传失败", { type: "error" });
+    message(response.message || t("repeat.uploadFail"), { type: "error" });
   }
 }
 
 function handleUploadError() {
-  message("上传失败", { type: "error" });
+  message(t("repeat.uploadFail"), { type: "error" });
 }
 </script>
 
@@ -108,6 +118,7 @@ function handleUploadError() {
           v-perms="'tool:file:upload'"
           action="/api/file/upload"
           :headers="uploadHeaders"
+          :data="uploadData"
           :show-file-list="false"
           :on-success="handleUploadSuccess"
           :on-error="handleUploadError"

@@ -264,3 +264,8 @@ tableBar:
   purePinLeft: 固定在左边
   purePinRight: 固定在右边
   pureUnpin: 取消固定
+repeat:
+  submit:
+    default: 请勿重复提交，请稍候再试
+  uploadSuccess: 上传成功
+  uploadFail: 上传失败
