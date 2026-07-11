@@ -13,6 +13,10 @@ npm-debug.log*
 .pnpm-debug.log
 tests/**/coverage/
 
+# Temporary browser API test artifacts
+public/test-api.js
+public/test-api.html
+
 # Editor directories and files
 .idea
 *.suo
