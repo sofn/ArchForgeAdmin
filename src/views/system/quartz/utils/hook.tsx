@@ -38,12 +38,12 @@ export function useQuartz() {
   });
 
   const columns: TableColumnList = [
-    { label: "ID", prop: "id", width: 80 },
-    { label: "任务名称", prop: "jobName", minWidth: 140 },
-    { label: "分组", prop: "jobGroup", width: 100 },
-    { label: "Bean", prop: "beanName", minWidth: 140 },
-    { label: "方法", prop: "methodName", minWidth: 120 },
-    { label: "Cron", prop: "cron", minWidth: 130 },
+    { label: "ID", prop: "id", width: 20 },
+    { label: "任务名称", prop: "jobName", minWidth: 100 },
+    { label: "分组", prop: "jobGroup", width: 80 },
+    { label: "Bean", prop: "beanName", minWidth: 120 },
+    { label: "方法", prop: "methodName", minWidth: 110 },
+    { label: "Cron", prop: "cron", minWidth: 120 },
     {
       label: "状态",
       prop: "status",
@@ -65,7 +65,7 @@ export function useQuartz() {
     {
       label: "操作",
       fixed: "right",
-      width: 320,
+      width: 520,
       slot: "operation"
     }
   ];
