@@ -8,9 +8,21 @@ interface FormItemProps {
   code: string;
   /** 备注 */
   remark: string;
+  /** 数据权限范围 */
+  dataScope?: number;
+  /** 自定义数据权限部门ID列表 */
+  customDeptIds?: number[];
 }
 interface FormProps {
   formInline: FormItemProps;
 }
 
-export type { FormItemProps, FormProps };
+interface DataScopeFormProps {
+  id: number;
+  /** 数据权限范围 */
+  dataScope: number;
+  /** 自定义数据权限部门ID列表 */
+  deptIds: number[];
+}
+
+export type { FormItemProps, FormProps, DataScopeFormProps };

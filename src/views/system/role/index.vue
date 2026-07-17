@@ -59,6 +59,9 @@ const {
   isExpandAll,
   isSelectAll,
   treeSearchValue,
+  dataScopeShow,
+  dataScopeForm,
+  deptOptions,
   // buttonClass,
   onSearch,
   resetForm,
@@ -66,6 +69,8 @@ const {
   handleMenu,
   handleSave,
   handleDelete,
+  handleDataScope,
+  handleDataScopeSave,
   filterMethod,
   transformI18n,
   onQueryChanged,
@@ -216,6 +221,16 @@ onMounted(() => {
               >
                 权限
               </el-button>
+              <el-button
+                class="reset-margin"
+                link
+                type="primary"
+                :size="size"
+                :icon="useRenderIcon('ri/database-2-line')"
+                @click="handleDataScope(row)"
+              >
+                数据权限
+              </el-button>
               <!-- <el-dropdown>
               <el-button
                 class="ml-3 mt-[2px]"
@@ -321,6 +336,47 @@ onMounted(() => {
         </el-tree-v2>
       </div>
     </div>
+
+    <el-dialog
+      v-model="dataScopeShow"
+      title="数据权限"
+      width="500px"
+      destroy-on-close
+      :close-on-click-modal="false"
+    >
+      <el-form :model="dataScopeForm" label-position="top">
+        <el-form-item label="数据范围">
+          <el-select v-model="dataScopeForm.dataScope" class="w-full">
+            <el-option label="全部数据权限" :value="1" />
+            <el-option label="自定义数据权限" :value="2" />
+            <el-option label="本部门数据权限" :value="3" />
+            <el-option label="本部门及以下数据权限" :value="4" />
+            <el-option label="仅本人数据权限" :value="5" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="dataScopeForm.dataScope === 2" label="数据权限">
+          <el-select
+            v-model="dataScopeForm.deptIds"
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            placeholder="请选择部门"
+            class="w-full"
+          >
+            <el-option
+              v-for="item in deptOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dataScopeShow = false">取消</el-button>
+        <el-button type="primary" @click="handleDataScopeSave">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 

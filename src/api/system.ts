@@ -156,6 +156,11 @@ export const saveRoleMenu = (data?: object) => {
   return http.request<Result>("post", "/role/save-menu", { data });
 };
 
+/** 更新角色数据权限 */
+export const updateRoleDataScope = (data?: object) => {
+  return http.request<Result>("post", "/role/data-scope", { data });
+};
+
 // ===================== 菜单管理 CRUD =====================
 
 /** 创建菜单 */

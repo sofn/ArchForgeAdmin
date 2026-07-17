@@ -6,15 +6,17 @@ import { ElMessageBox } from "element-plus";
 import { usePublicHooks } from "../../hooks";
 import { transformI18n } from "@/plugins/i18n";
 import { addDialog } from "@/components/ReDialog";
-import type { FormItemProps } from "../utils/types";
+import type { FormItemProps, DataScopeFormProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { getKeyList, deviceDetection } from "@pureadmin/utils";
 import {
   getRoleList,
   getRoleMenu,
   getRoleMenuIds,
+  getDeptList,
   createRole,
   updateRole,
+  updateRoleDataScope,
   deleteRole,
   updateRoleStatus,
   saveRoleMenu
@@ -39,6 +41,14 @@ export function useRole(treeRef: Ref) {
   const switchLoadMap = ref({});
   const isExpandAll = ref(false);
   const isSelectAll = ref(false);
+  const dataScopeShow = ref(false);
+  const dataScopeForm = reactive<DataScopeFormProps>({
+    id: 0,
+    dataScope: 1,
+    deptIds: []
+  });
+  const deptOptions = ref<{ value: number; label: string }[]>([]);
+  const curDataScopeRow = ref();
   const { switchStyle } = usePublicHooks();
   const treeProps = {
     value: "id",
@@ -262,8 +272,41 @@ export function useRole(treeRef: Ref) {
     });
   }
 
-  /** 数据权限 可自行开发 */
-  // function handleDatabase() {}
+  /** 数据权限 */
+  async function handleDataScope(row?: any) {
+    if (!row) return;
+    curDataScopeRow.value = row;
+    dataScopeForm.id = row.id;
+    dataScopeForm.dataScope = row.dataScope ?? 1;
+    dataScopeForm.deptIds = row.customDeptIds ?? [];
+    if (deptOptions.value.length === 0) {
+      const { code, data } = await getDeptList();
+      if (code === 0) {
+        deptOptions.value = (data || []).map(d => ({
+          value: d.id,
+          label: d.name
+        }));
+      }
+    }
+    dataScopeShow.value = true;
+  }
+
+  /** 保存数据权限 */
+  async function handleDataScopeSave() {
+    const { id, dataScope, deptIds } = dataScopeForm;
+    const { code } = await updateRoleDataScope({
+      id,
+      dataScope,
+      deptIds: dataScope === 2 ? deptIds : []
+    });
+    if (code === 0) {
+      message(`角色 ${curDataScopeRow.value?.name || ""} 数据权限修改成功`, {
+        type: "success"
+      });
+      dataScopeShow.value = false;
+      onSearch();
+    }
+  }
 
   const onQueryChanged = (query: string) => {
     treeRef.value!.filter(query);
@@ -309,6 +352,10 @@ export function useRole(treeRef: Ref) {
     isExpandAll,
     isSelectAll,
     treeSearchValue,
+    dataScopeShow,
+    dataScopeForm,
+    deptOptions,
+    curDataScopeRow,
     // buttonClass,
     onSearch,
     resetForm,
@@ -316,6 +363,8 @@ export function useRole(treeRef: Ref) {
     handleMenu,
     handleSave,
     handleDelete,
+    handleDataScope,
+    handleDataScopeSave,
     filterMethod,
     transformI18n,
     onQueryChanged,
