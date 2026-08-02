@@ -82,7 +82,7 @@ const {
       </el-form-item>
     </el-form>
 
-    <PureTableBar title="示例：任务管理" :columns="columns" @refresh="onSearch">
+    <PureTableBar title="任务管理" :columns="columns" @refresh="onSearch">
       <template #buttons>
         <el-button
           v-perms="['example:task:add']"
