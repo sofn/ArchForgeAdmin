@@ -2,6 +2,9 @@
 import { useMetaTable } from "./utils/hook";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
+import { generateMetaTableCode } from "@/api/metaTable";
+import { message } from "@/utils/message";
+import { ElMessageBox } from "element-plus";
 import { ref } from "vue";
 
 import Delete from "~icons/ep/delete";
@@ -33,6 +36,25 @@ const {
   handleSizeChange,
   handleCurrentChange
 } = useMetaTable();
+
+const handleGenerate = async (row: any) => {
+  try {
+    await ElMessageBox.confirm(
+      `即将生成表格 ${row.tableName}（${row.tableCode}）的前后端代码`,
+      "生成代码",
+      { confirmButtonText: "确认", cancelButtonText: "取消", type: "warning" }
+    );
+    const { code, data } = await generateMetaTableCode(row.id);
+    if (code === 0) {
+      message(
+        `代码生成成功：后端 ${data.backendDir}，前端 ${data.frontendDir}，文件数 ${data.files}`,
+        { type: "success" }
+      );
+    }
+  } catch (e) {
+    // 取消或失败
+  }
+};
 </script>
 
 <template>
@@ -129,6 +151,17 @@ const {
               @click="openDataDialog(row)"
             >
               数据
+            </el-button>
+            <el-button
+              v-if="hasPerms(['meta:table:generate'])"
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              :icon="useRenderIcon('ri/code-box-line')"
+              @click="handleGenerate(row)"
+            >
+              生成代码
             </el-button>
             <el-popconfirm
               v-if="hasPerms(['meta:table:remove'])"

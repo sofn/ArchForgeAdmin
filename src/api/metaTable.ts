@@ -89,3 +89,8 @@ export const exportMetaData = (id: number) => {
     responseType: "blob"
   });
 };
+
+/** 生成元表格代码 */
+export const generateMetaTableCode = (id: number, data?: object) => {
+  return http.request<Result>("post", `/meta-table/${id}/generate`, { data });
+};
