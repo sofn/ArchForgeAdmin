@@ -114,19 +114,31 @@ export function useMetaTable() {
     }, 300);
   }
 
-  function openTableDialog(title = "新增", row?: MetaTable) {
+  async function openTableDialog(title = "新增", row?: MetaTable) {
+    let formInline: MetaTable = {
+      id: row?.id ?? undefined,
+      tableCode: row?.tableCode ?? "",
+      tableName: row?.tableName ?? "",
+      description: row?.description ?? "",
+      tablePrefix: row?.tablePrefix ?? "meta_",
+      status: row?.status ?? 1,
+      columns: []
+    };
+
+    if (title === "修改" && row?.id) {
+      const detail = await getMetaTableDetail(row.id);
+      if (detail.code === 0) {
+        formInline = {
+          ...(detail.data as MetaTable),
+          columns: detail.data?.columns ?? []
+        };
+      }
+    }
+
     addDialog({
       title: `${title}元表格`,
       props: {
-        formInline: {
-          id: row?.id ?? undefined,
-          tableCode: row?.tableCode ?? "",
-          tableName: row?.tableName ?? "",
-          description: row?.description ?? "",
-          tablePrefix: row?.tablePrefix ?? "meta_",
-          status: row?.status ?? 1,
-          columns: title === "新增" ? [] : (row?.columns ?? [])
-        }
+        formInline
       },
       width: "70%",
       draggable: true,
@@ -139,7 +151,10 @@ export function useMetaTable() {
         const curData = options.props.formInline as MetaTable;
         FormRef.validate(async valid => {
           if (valid) {
-            if (!curData.columns || curData.columns.length === 0) {
+            if (
+              title === "新增" &&
+              (!curData.columns || curData.columns.length === 0)
+            ) {
               message("请至少配置一个字段", { type: "warning" });
               return;
             }
@@ -172,7 +187,7 @@ export function useMetaTable() {
       message(`已复制元表格"${row.tableName}"，新表格ID：${data}`, {
         type: "success"
       });
-      onSearch();
+      await onSearch();
     }
   }
 

@@ -56,8 +56,8 @@ defineExpose({ getRef });
       <el-switch
         v-else-if="column.dataType === 'BOOLEAN'"
         v-model="newFormInline[column.columnCode]"
-        active-value="true"
-        inactive-value="false"
+        :active-value="true"
+        :inactive-value="false"
       />
       <el-date-picker
         v-else-if="column.dataType === 'DATE'"
