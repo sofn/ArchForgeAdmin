@@ -156,7 +156,6 @@ defineExpose({ getRef });
     <div class="flex-bc mb-2">
       <span class="font-bold">字段列表</span>
       <el-button
-        v-if="!isEdit"
         type="primary"
         :icon="useRenderIcon(AddFill)"
         @click="openFieldDialog()"
@@ -184,7 +183,7 @@ defineExpose({ getRef });
           {{ row.index ? "是" : row.unique ? "唯一" : "否" }}
         </template>
       </el-table-column>
-      <el-table-column v-if="!isEdit" label="操作" width="120" fixed="right">
+      <el-table-column label="操作" width="120" fixed="right">
         <template #default="{ $index }">
           <el-button
             link

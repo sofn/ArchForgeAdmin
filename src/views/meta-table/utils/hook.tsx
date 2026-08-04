@@ -15,7 +15,8 @@ import {
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-import type { MetaTable } from "./types";
+import type { MetaColumn, MetaTable } from "./types";
+import { cloneDeep } from "lodash-es";
 import { deviceDetection } from "@pureadmin/utils";
 
 export function useMetaTable() {
@@ -124,6 +125,7 @@ export function useMetaTable() {
       status: row?.status ?? 1,
       columns: []
     };
+    let originalColumns: MetaColumn[] = [];
 
     if (title === "修改" && row?.id) {
       const detail = await getMetaTableDetail(row.id);
@@ -132,6 +134,7 @@ export function useMetaTable() {
           ...(detail.data as MetaTable),
           columns: detail.data?.columns ?? []
         };
+        originalColumns = cloneDeep(formInline.columns ?? []);
       }
     }
 
@@ -164,11 +167,21 @@ export function useMetaTable() {
                 type: "success"
               });
             } else {
-              await updateMetaTable(curData.id, {
-                tableName: curData.tableName,
-                description: curData.description,
-                status: curData.status
-              });
+              const dangerous = hasDangerousSchemaChange(
+                originalColumns,
+                curData.columns ?? []
+              );
+              let force = false;
+              if (dangerous) {
+                const ok = confirm(
+                  "检测到字段删除、类型变更、重命名或 NOT NULL 调整，这些操作可能破坏现有数据或依赖，是否继续？"
+                );
+                if (!ok) {
+                  return;
+                }
+                force = true;
+              }
+              await updateMetaTable(curData.id, { ...curData, force });
               message(`您修改了元表格"${curData.tableName}"`, {
                 type: "success"
               });
@@ -236,6 +249,34 @@ export function useMetaTable() {
   onMounted(() => {
     onSearch();
   });
+
+  function hasDangerousSchemaChange(
+    original: MetaColumn[],
+    current: MetaColumn[]
+  ): boolean {
+    const currentById = new Map(current.map(c => [c.id, c]));
+
+    for (const oldCol of original) {
+      const newCol = currentById.get(oldCol.id);
+      if (!newCol) {
+        return true;
+      }
+      if (newCol.columnCode !== oldCol.columnCode) {
+        return true;
+      }
+      if (
+        newCol.dataType !== oldCol.dataType ||
+        newCol.length !== oldCol.length ||
+        newCol.precision !== oldCol.precision ||
+        newCol.scale !== oldCol.scale ||
+        newCol.required !== oldCol.required
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   return {
     form,
