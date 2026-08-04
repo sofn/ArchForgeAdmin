@@ -84,10 +84,28 @@ export const deleteMetaData = (id: number, dataId: number) => {
 };
 
 /** 导出元表格数据 */
-export const exportMetaData = (id: number) => {
-  return http.request<Result>("get", `/meta-table/${id}/export`, {
-    responseType: "blob"
-  });
+export const exportMetaData = (id: number, format = "EXCEL") => {
+  return http.request<Result>(
+    "get",
+    `/meta-table/${id}/export?format=${format}`,
+    {
+      responseType: "blob"
+    }
+  );
+};
+
+/** 导入元表格数据 */
+export const importMetaData = (id: number, file: File, format = "CSV") => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return http.request<Result>(
+    "post",
+    `/meta-table/${id}/import?format=${format}`,
+    {
+      data: formData,
+      headers: { "Content-Type": "multipart/form-data" }
+    }
+  );
 };
 
 /** 生成元表格代码 */

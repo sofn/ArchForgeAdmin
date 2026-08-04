@@ -7,6 +7,7 @@ import AddFill from "~icons/ri/add-circle-line";
 import Delete from "~icons/ep/delete";
 import EditPen from "~icons/ep/edit-pen";
 import Download from "~icons/ep/download";
+import Upload from "~icons/ep/upload";
 import Refresh from "~icons/ep/refresh";
 
 const props = defineProps({
@@ -29,6 +30,8 @@ const props = defineProps({
 });
 
 const formRef = ref();
+const exportFormat = ref("EXCEL");
+const importFormat = ref("CSV");
 
 const {
   filters,
@@ -37,11 +40,13 @@ const {
   pagination,
   searchColumns,
   tableColumns,
+  exportFormatOptions,
   onSearch,
   resetForm,
   openDataForm,
   handleDeleteData,
   handleExport,
+  handleImport,
   handleSizeChange,
   handleCurrentChange
 } = useMetaData(
@@ -96,9 +101,42 @@ const {
         >
           新增数据
         </el-button>
-        <el-button :icon="useRenderIcon(Download)" @click="handleExport">
-          导出
-        </el-button>
+        <el-button-group class="mr-2">
+          <el-select
+            v-model="exportFormat"
+            class="w-30!"
+            placeholder="导出格式"
+          >
+            <el-option
+              v-for="opt in exportFormatOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
+          </el-select>
+          <el-button
+            :icon="useRenderIcon(Download)"
+            @click="handleExport(exportFormat)"
+          >
+            导出
+          </el-button>
+        </el-button-group>
+        <el-button-group>
+          <el-select
+            v-model="importFormat"
+            class="w-30!"
+            placeholder="导入格式"
+          >
+            <el-option label="CSV" value="CSV" />
+            <el-option label="JSON" value="JSON" />
+          </el-select>
+          <el-button
+            :icon="useRenderIcon(Upload)"
+            @click="handleImport(importFormat)"
+          >
+            导入
+          </el-button>
+        </el-button-group>
       </template>
       <template v-slot="{ size, dynamicColumns }">
         <pure-table

@@ -5,7 +5,8 @@ import {
   createMetaData,
   updateMetaData,
   deleteMetaData,
-  exportMetaData
+  exportMetaData,
+  importMetaData
 } from "@/api/metaTable";
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
@@ -119,16 +120,61 @@ export function useMetaData(
     onSearch();
   }
 
-  async function handleExport() {
-    const res = await exportMetaData(tableId);
+  const exportFormatOptions = [
+    { label: "Excel", value: "EXCEL" },
+    { label: "CSV", value: "CSV" },
+    { label: "JSON", value: "JSON" }
+  ];
+
+  async function handleExport(format = "EXCEL") {
+    const res = await exportMetaData(tableId, format);
+    const typeMap = {
+      EXCEL:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      CSV: "text/csv",
+      JSON: "application/json"
+    };
+    const suffixMap = { EXCEL: ".xlsx", CSV: ".csv", JSON: ".json" };
     const blob = new Blob([res as any], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      type: typeMap[format] || typeMap.EXCEL
     });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `${tableName}.xlsx`;
+    link.download = `${tableName}${suffixMap[format] || ".xlsx"}`;
     link.click();
     URL.revokeObjectURL(link.href);
+  }
+
+  function handleImport(format = "CSV") {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = format === "CSV" ? ".csv" : ".json";
+    input.onchange = async (event: any) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const res = await importMetaData(tableId, file, format);
+      if (res.code === 0) {
+        const data = res.data as {
+          total: number;
+          success: number;
+          failed: number;
+          errors: string[];
+        };
+        message(
+          `导入完成：共 ${data.total} 行，成功 ${data.success} 行，失败 ${data.failed} 行`,
+          {
+            type: data.failed > 0 ? "warning" : "success"
+          }
+        );
+        if (data.errors?.length) {
+          console.warn("导入错误详情：", data.errors);
+        }
+        onSearch();
+      } else {
+        message(res.message || "导入失败", { type: "error" });
+      }
+    };
+    input.click();
   }
 
   onMounted(() => {
@@ -142,11 +188,13 @@ export function useMetaData(
     pagination,
     searchColumns,
     tableColumns,
+    exportFormatOptions,
     onSearch,
     resetForm,
     openDataForm,
     handleDeleteData,
     handleExport,
+    handleImport,
     handleSizeChange,
     handleCurrentChange
   };
