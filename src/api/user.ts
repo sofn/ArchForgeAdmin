@@ -72,9 +72,41 @@ type ResultTable = {
   };
 };
 
+export type CaptchaResult = {
+  code: number;
+  message: string;
+  data: {
+    /** 是否开启验证码 */
+    isCaptchaOn: boolean;
+    /** 验证码唯一标识 */
+    captchaCodeKey: string;
+    /** 验证码图片 base64 */
+    captchaCodeImg: string;
+  };
+};
+
+export type LoginConfigResult = {
+  code: number;
+  message: string;
+  data: {
+    /** 是否开启验证码 */
+    isCaptchaOn: boolean;
+  };
+};
+
 /** 登录 */
 export const getLogin = (data?: object) => {
   return http.request<UserResult>("post", "/login", { data });
+};
+
+/** 获取验证码 */
+export const getCaptcha = () => {
+  return http.request<CaptchaResult>("get", "/captchaImage");
+};
+
+/** 获取登录配置 */
+export const getLoginConfig = () => {
+  return http.request<LoginConfigResult>("get", "/getConfig");
 };
 
 /** 刷新`token` */

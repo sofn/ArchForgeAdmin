@@ -19,8 +19,8 @@ import LoginQrCode from "./components/LoginQrCode.vue";
 import { useUserStoreHook } from "@/store/modules/user";
 import { initRouter, getTopMenu } from "@/router/utils";
 import { bg, avatar, illustration } from "./utils/static";
-import { ReImageVerify } from "@/components/ReImageVerify";
-import { ref, toRaw, reactive, watch, computed } from "vue";
+import { getCaptcha, getLoginConfig } from "@/api/user";
+import { ref, toRaw, reactive, watch, computed, onMounted } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useTranslationLang } from "@/layout/hooks/useTranslationLang";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
@@ -38,7 +38,6 @@ defineOptions({
   name: "Login"
 });
 
-const imgCode = ref("");
 const loginDay = ref(7);
 const router = useRouter();
 const loading = ref(false);
@@ -48,6 +47,46 @@ const ruleFormRef = ref<FormInstance>();
 const currentPage = computed(() => {
   return useUserStoreHook().currentPage;
 });
+
+const isCaptchaOn = ref(false);
+const captchaImg = ref("");
+const captchaCodeKey = ref("");
+
+async function loadCaptcha() {
+  const { code, data } = await getCaptcha();
+  if (code === 0) {
+    isCaptchaOn.value = data.isCaptchaOn;
+    captchaCodeKey.value = data.captchaCodeKey ?? "";
+    captchaImg.value = data.captchaCodeImg
+      ? `data:image/jpeg;base64,${data.captchaCodeImg}`
+      : "";
+  }
+}
+
+async function loadLoginConfig() {
+  const { code, data } = await getLoginConfig();
+  if (code === 0) {
+    isCaptchaOn.value = data.isCaptchaOn ?? false;
+  }
+  if (isCaptchaOn.value) {
+    await loadCaptcha();
+  }
+}
+
+loginRules.verifyCode = [
+  {
+    validator: (_rule, value, callback) => {
+      if (!isCaptchaOn.value) {
+        callback();
+      } else if (!value) {
+        callback(new Error(transformI18n($t("login.pureVerifyCodeReg"))));
+      } else {
+        callback();
+      }
+    },
+    trigger: "blur"
+  }
+];
 
 const { t } = useI18n();
 const { initStorage } = useLayout();
@@ -71,7 +110,9 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       useUserStoreHook()
         .loginByUsername({
           username: ruleForm.username,
-          password: ruleForm.password
+          password: ruleForm.password,
+          captchaCode: ruleForm.verifyCode,
+          captchaCodeKey: captchaCodeKey.value
         })
         .then(async () => {
           // 获取后端路由
@@ -81,8 +122,12 @@ const onLogin = async (formEl: FormInstance | undefined) => {
             message(t("login.pureLoginSuccess"), { type: "success" });
           });
         })
-        .catch(_err => {
+        .catch(async _err => {
           message(t("login.pureLoginFail"), { type: "error" });
+          if (isCaptchaOn.value) {
+            ruleForm.verifyCode = "";
+            await loadCaptcha();
+          }
         })
         .finally(() => {
           disabled.value = false;
@@ -107,14 +152,15 @@ useEventListener(document, "keydown", ({ code }) => {
     immediateDebounce(ruleFormRef.value);
 });
 
-watch(imgCode, value => {
-  useUserStoreHook().SET_VERIFYCODE(value);
-});
 watch(checked, bool => {
   useUserStoreHook().SET_ISREMEMBERED(bool);
 });
 watch(loginDay, value => {
   useUserStoreHook().SET_LOGINDAY(value);
+});
+
+onMounted(() => {
+  loadLoginConfig();
 });
 </script>
 
@@ -217,7 +263,7 @@ watch(loginDay, value => {
               </el-form-item>
             </Motion>
 
-            <Motion :delay="200">
+            <Motion v-if="isCaptchaOn" :delay="200">
               <el-form-item prop="verifyCode">
                 <el-input
                   v-model="ruleForm.verifyCode"
@@ -226,7 +272,13 @@ watch(loginDay, value => {
                   :prefix-icon="useRenderIcon(Keyhole)"
                 >
                   <template v-slot:append>
-                    <ReImageVerify v-model:code="imgCode" />
+                    <img
+                      v-if="captchaImg"
+                      :src="captchaImg"
+                      alt="captcha"
+                      class="h-10 cursor-pointer"
+                      @click="loadCaptcha"
+                    />
                   </template>
                 </el-input>
               </el-form-item>
