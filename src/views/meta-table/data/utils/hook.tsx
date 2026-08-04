@@ -93,9 +93,9 @@ export function useMetaData(
       closeOnClickModal: false,
       contentRenderer: () =>
         h(DataForm, { ref: formRef, formInline: null, columns: null }),
-      beforeSure: (done, { options }) => {
+      beforeSure: done => {
         const FormRef = formRef.value.getRef();
-        const curData = options.props.formInline as Record<string, any>;
+        const curData = formRef.value.getData() as Record<string, any>;
         FormRef.validate(async valid => {
           if (valid) {
             if (title === "新增") {

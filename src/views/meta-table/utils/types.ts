@@ -18,8 +18,11 @@ export interface MetaColumn {
   searchable?: boolean;
   listVisible?: boolean;
   index?: boolean;
+  indexType?: string;
+  indexGroup?: string;
   sort?: number;
   options?: OptionItem[];
+  arrayElementType?: string;
 }
 
 export interface MetaTable {

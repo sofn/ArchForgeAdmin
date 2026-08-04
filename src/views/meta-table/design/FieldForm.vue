@@ -20,8 +20,11 @@ const props = defineProps({
       searchable: true,
       listVisible: true,
       index: false,
+      indexType: undefined,
+      indexGroup: undefined,
       sort: 0,
-      options: []
+      options: [],
+      arrayElementType: undefined
     })
   }
 });
@@ -37,15 +40,46 @@ const dataTypeOptions = [
   { label: "布尔", value: "BOOLEAN" },
   { label: "日期", value: "DATE" },
   { label: "日期时间", value: "DATETIME" },
+  { label: "时间戳(带时区)", value: "TIMESTAMPTZ" },
+  { label: "UUID", value: "UUID" },
   { label: "枚举", value: "ENUM" },
   { label: "JSON", value: "JSON" },
+  { label: "数组", value: "ARRAY" },
+  { label: "地理位置", value: "GEO" },
   { label: "文件", value: "FILE" }
+];
+
+const arrayElementTypeOptions = [
+  { label: "文本", value: "STRING" },
+  { label: "整数", value: "INTEGER" },
+  { label: "小数", value: "DECIMAL" },
+  { label: "布尔", value: "BOOLEAN" }
+];
+
+const indexTypeOptions = [
+  { label: "BTREE", value: "BTREE" },
+  { label: "GIN", value: "GIN" },
+  { label: "GIST", value: "GIST" },
+  { label: "全文", value: "FULLTEXT" }
 ];
 
 const showLength = ["STRING", "FILE"];
 const showPrecision = ["DECIMAL"];
 const showEnum = ["ENUM"];
-const showNumber = ["INTEGER", "DECIMAL"];
+const showArrayElement = ["ARRAY"];
+const showIndexConfig = [
+  "STRING",
+  "TEXT",
+  "INTEGER",
+  "DECIMAL",
+  "DATE",
+  "DATETIME",
+  "TIMESTAMPTZ",
+  "UUID",
+  "JSON",
+  "ARRAY",
+  "GEO"
+];
 
 function getRef() {
   return ruleFormRef.value;
@@ -61,6 +95,20 @@ function removeOption(index: number) {
   const options = newFormInline.value.options ?? [];
   options.splice(index, 1);
   newFormInline.value.options = [...options];
+}
+
+function defaultValuePlaceholder() {
+  const type = newFormInline.value.dataType;
+  if (type === "ARRAY") {
+    return '示例：["a","b"] 或 1,2,3';
+  }
+  if (type === "GEO") {
+    return '示例：{"lat":31.23,"lng":121.47}';
+  }
+  if (type === "JSON") {
+    return '示例：{"key":"value"}';
+  }
+  return "请输入默认值";
 }
 
 defineExpose({ getRef });
@@ -123,10 +171,24 @@ defineExpose({ getRef });
         />
       </el-form-item>
     </template>
+    <el-form-item
+      v-if="showArrayElement.includes(newFormInline.dataType)"
+      label="元素类型"
+      prop="arrayElementType"
+    >
+      <el-select v-model="newFormInline.arrayElementType" class="w-full!">
+        <el-option
+          v-for="item in arrayElementTypeOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+    </el-form-item>
     <el-form-item label="默认值" prop="defaultValue">
       <el-input
         v-model="newFormInline.defaultValue"
-        placeholder="请输入默认值"
+        :placeholder="defaultValuePlaceholder()"
       />
     </el-form-item>
     <el-form-item label="排序" prop="sort">
@@ -154,6 +216,32 @@ defineExpose({ getRef });
       <el-checkbox v-model="newFormInline.unique">唯一</el-checkbox>
       <el-checkbox v-model="newFormInline.index">索引</el-checkbox>
     </el-form-item>
+    <template
+      v-if="
+        newFormInline.index && showIndexConfig.includes(newFormInline.dataType)
+      "
+    >
+      <el-form-item label="索引类型">
+        <el-select
+          v-model="newFormInline.indexType"
+          class="w-full!"
+          placeholder="默认 BTREE"
+        >
+          <el-option
+            v-for="item in indexTypeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="索引分组">
+        <el-input
+          v-model="newFormInline.indexGroup"
+          placeholder="相同分组组成复合索引，留空为单列索引"
+        />
+      </el-form-item>
+    </template>
     <el-form-item label="其他">
       <el-checkbox v-model="newFormInline.searchable">可搜索</el-checkbox>
       <el-checkbox v-model="newFormInline.listVisible">列表显示</el-checkbox>
