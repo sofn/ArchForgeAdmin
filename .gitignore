@@ -24,3 +24,6 @@ public/test-api.html
 *.njsproj
 *.sln
 tsconfig.tsbuildinfo
+
+# Git worktrees
+.worktrees/
