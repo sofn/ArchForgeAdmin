@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { fieldRules } from "../utils/rule";
 import type { FieldFormProps, OptionItem } from "../utils/types";
 
@@ -24,7 +24,8 @@ const props = defineProps({
       indexGroup: undefined,
       sort: 0,
       options: [],
-      arrayElementType: undefined
+      arrayElementType: undefined,
+      searchType: "LIKE"
     })
   }
 });
@@ -46,7 +47,9 @@ const dataTypeOptions = [
   { label: "JSON", value: "JSON" },
   { label: "数组", value: "ARRAY" },
   { label: "地理位置", value: "GEO" },
-  { label: "文件", value: "FILE" }
+  { label: "文件", value: "FILE" },
+  { label: "图片", value: "IMAGE" },
+  { label: "多图片", value: "MULTI_IMAGE" }
 ];
 
 const arrayElementTypeOptions = [
@@ -63,7 +66,8 @@ const indexTypeOptions = [
   { label: "全文", value: "FULLTEXT" }
 ];
 
-const showLength = ["STRING", "FILE"];
+const fileTypes = ["FILE", "IMAGE", "MULTI_IMAGE"];
+const showLength = ["STRING", ...fileTypes];
 const showPrecision = ["DECIMAL"];
 const showEnum = ["ENUM"];
 const showArrayElement = ["ARRAY"];
@@ -78,12 +82,65 @@ const showIndexConfig = [
   "UUID",
   "JSON",
   "ARRAY",
-  "GEO"
+  "GEO",
+  ...fileTypes
 ];
+const showSearchType = [
+  "STRING",
+  "TEXT",
+  "INTEGER",
+  "DECIMAL",
+  "DATE",
+  "DATETIME",
+  "TIMESTAMPTZ",
+  "ENUM"
+];
+
+function isFileType(type: string) {
+  return fileTypes.includes(type);
+}
+
+function searchTypeOptions(type: string) {
+  if (
+    ["INTEGER", "DECIMAL", "DATE", "DATETIME", "TIMESTAMPTZ"].includes(type)
+  ) {
+    return [
+      { label: "精确匹配", value: "EXACT" },
+      { label: "范围搜索", value: "RANGE" }
+    ];
+  }
+  return [
+    { label: "精确匹配", value: "EXACT" },
+    { label: "模糊搜索", value: "LIKE" }
+  ];
+}
+
+function lengthLabel(type: string) {
+  return isFileType(type) ? "文件大小限制(B)" : "长度";
+}
+
+function lengthMax(type: string) {
+  return isFileType(type) ? 100 * 1024 * 1024 : 4000;
+}
 
 function getRef() {
   return ruleFormRef.value;
 }
+
+watch(
+  () => newFormInline.value.dataType,
+  type => {
+    const options = searchTypeOptions(type);
+    const defaultType = options[0].value;
+    if (
+      !newFormInline.value.searchType ||
+      !options.some(o => o.value === newFormInline.value.searchType)
+    ) {
+      newFormInline.value.searchType = defaultType;
+    }
+  },
+  { immediate: true }
+);
 
 function addOption() {
   const options = newFormInline.value.options ?? [];
@@ -145,13 +202,13 @@ defineExpose({ getRef });
     </el-form-item>
     <el-form-item
       v-if="showLength.includes(newFormInline.dataType)"
-      label="长度"
+      :label="lengthLabel(newFormInline.dataType)"
       prop="length"
     >
       <el-input-number
         v-model="newFormInline.length"
         :min="1"
-        :max="4000"
+        :max="lengthMax(newFormInline.dataType)"
         class="w-full!"
       />
     </el-form-item>
@@ -242,6 +299,19 @@ defineExpose({ getRef });
         />
       </el-form-item>
     </template>
+    <el-form-item
+      v-if="showSearchType.includes(newFormInline.dataType)"
+      label="搜索方式"
+    >
+      <el-select v-model="newFormInline.searchType" class="w-full!">
+        <el-option
+          v-for="item in searchTypeOptions(newFormInline.dataType)"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+    </el-form-item>
     <el-form-item label="其他">
       <el-checkbox v-model="newFormInline.searchable">可搜索</el-checkbox>
       <el-checkbox v-model="newFormInline.listVisible">列表显示</el-checkbox>

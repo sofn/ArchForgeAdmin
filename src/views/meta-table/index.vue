@@ -29,7 +29,7 @@ const {
   hasPerms,
   onSearch,
   resetForm,
-  openTableDialog,
+  openTableTab,
   handleCopy,
   handleDelete,
   openDataDialog,
@@ -94,7 +94,7 @@ const handleGenerate = async (row: any) => {
           v-perms="['meta:table:add']"
           type="primary"
           :icon="useRenderIcon(AddFill)"
-          @click="openTableDialog()"
+          @click="openTableTab()"
         >
           新增表格
         </el-button>
@@ -126,7 +126,7 @@ const handleGenerate = async (row: any) => {
               type="primary"
               :size="size"
               :icon="useRenderIcon(EditPen)"
-              @click="openTableDialog('修改', row)"
+              @click="openTableTab('修改', row)"
             >
               修改
             </el-button>

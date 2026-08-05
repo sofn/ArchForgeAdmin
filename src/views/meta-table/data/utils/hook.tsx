@@ -14,6 +14,16 @@ import { reactive, ref, onMounted, h, toRaw } from "vue";
 import { deviceDetection } from "@pureadmin/utils";
 import type { MetaColumn } from "../../utils/types";
 
+function defaultSearchType(column: MetaColumn): string {
+  if (column.searchType) {
+    return column.searchType;
+  }
+  if (["STRING", "TEXT", "ENUM"].includes(column.dataType)) {
+    return "LIKE";
+  }
+  return "EXACT";
+}
+
 export function useMetaData(
   tableId: number,
   tableName: string,
@@ -31,19 +41,44 @@ export function useMetaData(
   });
   const formRef = ref();
 
-  const searchColumns = allColumns.filter(c => c.searchable);
+  const searchColumns = allColumns
+    .filter(c => c.searchable)
+    .map(c => ({
+      ...c,
+      searchType: defaultSearchType(c)
+    }));
+
+  searchColumns.forEach(c => {
+    if (c.searchType === "RANGE") {
+      filters[c.columnCode] = { start: "", end: "" };
+    }
+  });
 
   const tableColumns: TableColumnList = columns.map(c => ({
     label: c.columnName,
     prop: c.columnCode,
     minWidth: 140
   }));
-  tableColumns.push({
-    label: "操作",
-    fixed: "right",
-    width: 180,
-    slot: "operation"
-  });
+  tableColumns.push(
+    {
+      label: "创建时间",
+      prop: "create_time",
+      minWidth: 160,
+      formatter: ({ create_time }) => create_time || ""
+    },
+    {
+      label: "修改时间",
+      prop: "update_time",
+      minWidth: 160,
+      formatter: ({ update_time }) => update_time || ""
+    },
+    {
+      label: "操作",
+      fixed: "right",
+      width: 180,
+      slot: "operation"
+    }
+  );
 
   function handleSizeChange(val: number) {
     pagination.pageSize = val;
@@ -58,7 +93,12 @@ export function useMetaData(
   function resetForm(formEl) {
     if (!formEl) return;
     formEl.resetFields();
-    Object.keys(filters).forEach(k => (filters[k] = ""));
+    Object.keys(filters).forEach(k => {
+      filters[k] =
+        searchColumns.find(c => c.columnCode === k)?.searchType === "RANGE"
+          ? { start: "", end: "" }
+          : "";
+    });
     onSearch();
   }
 

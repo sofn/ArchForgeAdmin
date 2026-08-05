@@ -71,7 +71,111 @@ const {
         :label="`${col.columnName}：`"
         :prop="col.columnCode"
       >
-        <el-input v-model="filters[col.columnCode]" clearable class="w-45!" />
+        <template v-if="col.searchType === 'RANGE'">
+          <div class="flex gap-2">
+            <template
+              v-if="['DATE', 'DATETIME', 'TIMESTAMPTZ'].includes(col.dataType)"
+            >
+              <el-date-picker
+                v-model="filters[col.columnCode].start"
+                :type="col.dataType === 'DATE' ? 'date' : 'datetime'"
+                :value-format="
+                  col.dataType === 'DATE' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss'
+                "
+                placeholder="开始"
+                class="w-35!"
+              />
+              <el-date-picker
+                v-model="filters[col.columnCode].end"
+                :type="col.dataType === 'DATE' ? 'date' : 'datetime'"
+                :value-format="
+                  col.dataType === 'DATE' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss'
+                "
+                placeholder="结束"
+                class="w-35!"
+              />
+            </template>
+            <template v-else-if="['INTEGER', 'DECIMAL'].includes(col.dataType)">
+              <el-input-number
+                v-model="filters[col.columnCode].start"
+                :precision="col.dataType === 'DECIMAL' ? col.scale || 2 : 0"
+                placeholder="开始"
+                class="w-35!"
+              />
+              <el-input-number
+                v-model="filters[col.columnCode].end"
+                :precision="col.dataType === 'DECIMAL' ? col.scale || 2 : 0"
+                placeholder="结束"
+                class="w-35!"
+              />
+            </template>
+            <template v-else>
+              <el-input
+                v-model="filters[col.columnCode].start"
+                placeholder="开始"
+                clearable
+                class="w-35!"
+              />
+              <el-input
+                v-model="filters[col.columnCode].end"
+                placeholder="结束"
+                clearable
+                class="w-35!"
+              />
+            </template>
+          </div>
+        </template>
+        <template v-else>
+          <el-input
+            v-if="
+              ['STRING', 'TEXT', 'UUID', 'JSON', 'GEO'].includes(col.dataType)
+            "
+            v-model="filters[col.columnCode]"
+            :placeholder="`请输入${col.columnName}`"
+            clearable
+            class="w-45!"
+          />
+          <el-input-number
+            v-else-if="['INTEGER', 'DECIMAL'].includes(col.dataType)"
+            v-model="filters[col.columnCode]"
+            :precision="col.dataType === 'DECIMAL' ? col.scale || 2 : 0"
+            :placeholder="`请输入${col.columnName}`"
+            controls-position="right"
+            class="w-45!"
+          />
+          <el-date-picker
+            v-else-if="
+              ['DATE', 'DATETIME', 'TIMESTAMPTZ'].includes(col.dataType)
+            "
+            v-model="filters[col.columnCode]"
+            :type="col.dataType === 'DATE' ? 'date' : 'datetime'"
+            :value-format="
+              col.dataType === 'DATE' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss'
+            "
+            :placeholder="`请选择${col.columnName}`"
+            class="w-45!"
+          />
+          <el-select
+            v-else-if="col.dataType === 'ENUM'"
+            v-model="filters[col.columnCode]"
+            :placeholder="`请选择${col.columnName}`"
+            clearable
+            class="w-45!"
+          >
+            <el-option
+              v-for="opt in col.options"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
+          </el-select>
+          <el-input
+            v-else
+            v-model="filters[col.columnCode]"
+            clearable
+            class="w-45!"
+          />
+        </template>
       </el-form-item>
       <el-form-item>
         <el-button

@@ -23,6 +23,7 @@ export interface MetaColumn {
   sort?: number;
   options?: OptionItem[];
   arrayElementType?: string;
+  searchType?: string;
 }
 
 export interface MetaTable {
@@ -33,7 +34,12 @@ export interface MetaTable {
   tablePrefix?: string;
   status?: number;
   columns?: MetaColumn[];
+  creatorId?: number;
+  creatorName?: string;
   createTime?: string;
+  updaterId?: number;
+  updaterName?: string;
+  updateTime?: string;
 }
 
 export interface TableFormProps {

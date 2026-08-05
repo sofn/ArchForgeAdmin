@@ -1,12 +1,9 @@
 import dayjs from "dayjs";
-import TableForm from "../form/TableForm.vue";
 import DataManage from "../data/index.vue";
 import { message } from "@/utils/message";
 import { hasPerms } from "@/utils/auth";
 import {
   getMetaTableList,
-  createMetaTable,
-  updateMetaTable,
   copyMetaTable,
   deleteMetaTable,
   checkDeleteMetaTable,
@@ -15,16 +12,15 @@ import {
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-import type { MetaColumn, MetaTable } from "./types";
-import { cloneDeep } from "lodash-es";
-import { deviceDetection } from "@pureadmin/utils";
+import { useRouter } from "vue-router";
+import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
+import type { MetaTable } from "./types";
 
 export function useMetaTable() {
   const form = reactive({
     keyword: ""
   });
 
-  const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
   const pagination = reactive<PaginationProps>({
@@ -67,11 +63,28 @@ export function useMetaTable() {
       )
     },
     {
+      label: "创建人",
+      prop: "creatorName",
+      minWidth: 100
+    },
+    {
       label: "创建时间",
       prop: "createTime",
       minWidth: 160,
       formatter: ({ createTime }) =>
         createTime ? dayjs(createTime).format("YYYY-MM-DD HH:mm:ss") : ""
+    },
+    {
+      label: "修改人",
+      prop: "updaterName",
+      minWidth: 100
+    },
+    {
+      label: "修改时间",
+      prop: "updateTime",
+      minWidth: 160,
+      formatter: ({ updateTime }) =>
+        updateTime ? dayjs(updateTime).format("YYYY-MM-DD HH:mm:ss") : ""
     },
     {
       label: "操作",
@@ -115,83 +128,25 @@ export function useMetaTable() {
     }, 300);
   }
 
-  async function openTableDialog(title = "新增", row?: MetaTable) {
-    let formInline: MetaTable = {
-      id: row?.id ?? undefined,
-      tableCode: row?.tableCode ?? "",
-      tableName: row?.tableName ?? "",
-      description: row?.description ?? "",
-      tablePrefix: row?.tablePrefix ?? "meta_",
-      status: row?.status ?? 1,
-      columns: []
-    };
-    let originalColumns: MetaColumn[] = [];
+  const router = useRouter();
 
+  async function openTableTab(title = "新增", row?: MetaTable) {
+    const query: Record<string, string> = {};
     if (title === "修改" && row?.id) {
-      const detail = await getMetaTableDetail(row.id);
-      if (detail.code === 0) {
-        formInline = {
-          ...(detail.data as MetaTable),
-          columns: detail.data?.columns ?? []
-        };
-        originalColumns = cloneDeep(formInline.columns ?? []);
-      }
+      query.id = String(row.id);
     }
 
-    addDialog({
-      title: `${title}元表格`,
-      props: {
-        formInline
-      },
-      width: "70%",
-      draggable: true,
-      fullscreen: deviceDetection(),
-      fullscreenIcon: true,
-      closeOnClickModal: false,
-      contentRenderer: () => h(TableForm, { ref: formRef, formInline: null }),
-      beforeSure: (done, { options }) => {
-        const FormRef = formRef.value.getRef();
-        const curData = options.props.formInline as MetaTable;
-        FormRef.validate(async valid => {
-          if (valid) {
-            if (
-              title === "新增" &&
-              (!curData.columns || curData.columns.length === 0)
-            ) {
-              message("请至少配置一个字段", { type: "warning" });
-              return;
-            }
-            if (title === "新增") {
-              await createMetaTable(curData);
-              message(`您新增了元表格"${curData.tableName}"`, {
-                type: "success"
-              });
-            } else {
-              const dangerous = hasDangerousSchemaChange(
-                originalColumns,
-                curData.columns ?? []
-              );
-              let force = false;
-              if (dangerous) {
-                const ok = confirm(
-                  "检测到字段删除、类型变更、重命名或 NOT NULL 调整，这些操作可能破坏现有数据或依赖，是否继续？"
-                );
-                if (!ok) {
-                  return;
-                }
-                force = true;
-              }
-              await updateMetaTable(curData.id, { ...curData, force });
-              message(`您修改了元表格"${curData.tableName}"`, {
-                type: "success"
-              });
-            }
-            done();
-            onSearch();
-          }
-        });
+    const path = "/meta-table/design";
+    useMultiTagsStoreHook().handleTags("push", {
+      path,
+      name: "MetaTableDesign",
+      query,
+      meta: {
+        title: `${title}：${row?.tableName ?? "元表格"}`,
+        dynamicLevel: 5
       }
     });
+    router.push({ name: "MetaTableDesign", query });
   }
 
   async function handleCopy(row: MetaTable) {
@@ -250,34 +205,6 @@ export function useMetaTable() {
     onSearch();
   });
 
-  function hasDangerousSchemaChange(
-    original: MetaColumn[],
-    current: MetaColumn[]
-  ): boolean {
-    const currentById = new Map(current.map(c => [c.id, c]));
-
-    for (const oldCol of original) {
-      const newCol = currentById.get(oldCol.id);
-      if (!newCol) {
-        return true;
-      }
-      if (newCol.columnCode !== oldCol.columnCode) {
-        return true;
-      }
-      if (
-        newCol.dataType !== oldCol.dataType ||
-        newCol.length !== oldCol.length ||
-        newCol.precision !== oldCol.precision ||
-        newCol.scale !== oldCol.scale ||
-        newCol.required !== oldCol.required
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   return {
     form,
     loading,
@@ -287,7 +214,7 @@ export function useMetaTable() {
     hasPerms,
     onSearch,
     resetForm,
-    openTableDialog,
+    openTableTab,
     handleCopy,
     handleDelete,
     openDataDialog,

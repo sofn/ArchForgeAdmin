@@ -64,5 +64,14 @@ export default [
       title: $t("menus.pureEmpty"),
       showLink: false
     }
+  },
+  {
+    path: "/meta-table/design",
+    name: "MetaTableDesign",
+    component: () => import("@/views/meta-table/design/index.vue"),
+    meta: {
+      title: "元表格设计",
+      showLink: false
+    }
   }
 ] satisfies Array<RouteConfigsTable>;

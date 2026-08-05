@@ -37,13 +37,23 @@ const dataTypeOptions = [
   { label: "布尔", value: "BOOLEAN" },
   { label: "日期", value: "DATE" },
   { label: "日期时间", value: "DATETIME" },
+  { label: "时间戳(带时区)", value: "TIMESTAMPTZ" },
+  { label: "UUID", value: "UUID" },
   { label: "枚举", value: "ENUM" },
   { label: "JSON", value: "JSON" },
-  { label: "文件", value: "FILE" }
+  { label: "数组", value: "ARRAY" },
+  { label: "地理位置", value: "GEO" },
+  { label: "文件", value: "FILE" },
+  { label: "图片", value: "IMAGE" },
+  { label: "多图片", value: "MULTI_IMAGE" }
 ];
 
 function getRef() {
   return ruleFormRef.value;
+}
+
+function getForm() {
+  return newFormInline.value;
 }
 
 function openFieldDialog(field?: MetaColumn, index?: number) {
@@ -66,8 +76,12 @@ function openFieldDialog(field?: MetaColumn, index?: number) {
           searchable: true,
           listVisible: true,
           index: false,
+          indexType: undefined,
+          indexGroup: undefined,
           sort: 0,
-          options: []
+          options: [],
+          arrayElementType: undefined,
+          searchType: "LIKE"
         }
       )
     },
@@ -110,7 +124,7 @@ function getDataTypeLabel(value: string) {
 
 const fieldFormRef = ref();
 
-defineExpose({ getRef });
+defineExpose({ getRef, getForm });
 </script>
 
 <template>
@@ -178,9 +192,22 @@ defineExpose({ getRef });
           {{ row.required ? "是" : "否" }}
         </template>
       </el-table-column>
-      <el-table-column label="索引" width="80">
+      <el-table-column label="索引" width="120">
         <template #default="{ row }">
-          {{ row.index ? "是" : row.unique ? "唯一" : "否" }}
+          {{
+            row.index
+              ? row.indexGroup
+                ? `联合(${row.indexGroup})`
+                : "是"
+              : row.unique
+                ? "唯一"
+                : "否"
+          }}
+        </template>
+      </el-table-column>
+      <el-table-column label="搜索方式" width="100">
+        <template #default="{ row }">
+          {{ row.searchType ?? "-" }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="120" fixed="right">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import type { DataFormProps } from "../utils/types";
+import { message } from "@/utils/message";
+import type { DataFormProps, MetaColumn } from "../utils/types";
 
 const props = defineProps({
   formInline: {
@@ -16,12 +17,24 @@ const props = defineProps({
 const ruleFormRef = ref();
 const newFormInline = ref<Record<string, any>>(props.formInline);
 
+const auditColumns = [
+  "id",
+  "creator_id",
+  "create_time",
+  "updater_id",
+  "update_time",
+  "deleted"
+];
+
 const visibleColumns = computed(() =>
-  props.columns.filter(c => c.columnCode !== "id")
+  props.columns.filter(c => !auditColumns.includes(c.columnCode))
 );
 
-const textTypes = ["STRING", "TEXT", "FILE", "UUID"];
+const textTypes = ["STRING", "TEXT", "UUID"];
 const numberTypes = ["INTEGER", "DECIMAL"];
+const fileTypes = ["FILE", "IMAGE"];
+
+const uploadUrl = "/api/file/upload";
 
 function getRef() {
   return ruleFormRef.value;
@@ -35,6 +48,75 @@ function getData() {
     }
   });
   return result;
+}
+
+function fileListFor(column: MetaColumn) {
+  let value = newFormInline.value[column.columnCode];
+  if (column.dataType === "MULTI_IMAGE") {
+    if (typeof value === "string" && value) {
+      try {
+        value = JSON.parse(value);
+        newFormInline.value[column.columnCode] = value;
+      } catch {
+        value = [];
+      }
+    }
+    const ids = Array.isArray(value) ? value : [];
+    return ids.map((id, idx) => ({
+      name: `图片${idx + 1}`,
+      url: downloadUrl(id),
+      uid: id + idx
+    }));
+  }
+  if (value) {
+    return [
+      { name: column.columnName, url: downloadUrl(value), uid: Number(value) }
+    ];
+  }
+  return [];
+}
+
+function downloadUrl(fileId: number) {
+  return `/api/file/download/${fileId}`;
+}
+
+function beforeUpload(column: MetaColumn, file: File) {
+  const maxSize = column.length || 10 * 1024 * 1024;
+  if (file.size > maxSize) {
+    message(`文件大小不能超过 ${maxSize} 字节`, { type: "error" });
+    return false;
+  }
+  return true;
+}
+
+function handleUploadSuccess(column: MetaColumn, res: any) {
+  if (res?.code === 0 && res?.data?.fileId) {
+    newFormInline.value[column.columnCode] = res.data.fileId;
+  }
+}
+
+function handleMultiUploadSuccess(column: MetaColumn, res: any) {
+  if (res?.code === 0 && res?.data?.fileId) {
+    if (!Array.isArray(newFormInline.value[column.columnCode])) {
+      newFormInline.value[column.columnCode] = [];
+    }
+    newFormInline.value[column.columnCode].push(res.data.fileId);
+  }
+}
+
+function handleMultiRemove(column: MetaColumn, file: any) {
+  const value = newFormInline.value[column.columnCode];
+  if (!Array.isArray(value)) return;
+  const fileId = extractFileId(file.url);
+  const index = value.indexOf(fileId);
+  if (index > -1) {
+    value.splice(index, 1);
+  }
+}
+
+function extractFileId(url: string) {
+  const match = url.match(/\/file\/download\/(\d+)$/);
+  return match ? Number(match[1]) : 0;
 }
 
 function geoModel(columnCode: string) {
@@ -68,8 +150,30 @@ defineExpose({ getRef, getData });
       :prop="column.columnCode"
       :required="column.required"
     >
+      <el-upload
+        v-if="fileTypes.includes(column.dataType)"
+        :file-list="fileListFor(column)"
+        :action="uploadUrl"
+        :limit="1"
+        :before-upload="file => beforeUpload(column, file as File)"
+        :on-success="(res: any) => handleUploadSuccess(column, res)"
+      >
+        <el-button type="primary">上传{{ column.columnName }}</el-button>
+      </el-upload>
+      <el-upload
+        v-else-if="column.dataType === 'MULTI_IMAGE'"
+        :file-list="fileListFor(column)"
+        :action="uploadUrl"
+        list-type="picture-card"
+        multiple
+        :before-upload="file => beforeUpload(column, file as File)"
+        :on-success="(res: any) => handleMultiUploadSuccess(column, res)"
+        :on-remove="(file: any) => handleMultiRemove(column, file)"
+      >
+        <span class="text-2xl">+</span>
+      </el-upload>
       <el-input
-        v-if="textTypes.includes(column.dataType)"
+        v-else-if="textTypes.includes(column.dataType)"
         v-model="newFormInline[column.columnCode]"
         :placeholder="`请输入${column.columnName}`"
         clearable
