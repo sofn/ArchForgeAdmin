@@ -13,6 +13,7 @@ import type { PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import { deviceDetection } from "@pureadmin/utils";
 import type { MetaColumn } from "../../utils/types";
+import { useDict } from "@/utils/dict";
 
 function defaultSearchType(column: MetaColumn): string {
   if (column.searchType) {
@@ -40,6 +41,7 @@ export function useMetaData(
     background: true
   });
   const formRef = ref();
+  const { dictMap, loadDict, getDictLabel } = useDict();
 
   const searchColumns = allColumns
     .filter(c => c.searchable)
@@ -54,11 +56,22 @@ export function useMetaData(
     }
   });
 
-  const tableColumns: TableColumnList = columns.map(c => ({
-    label: c.columnName,
-    prop: c.columnCode,
-    minWidth: 140
-  }));
+  const tableColumns: TableColumnList = columns.map(c => {
+    if (c.dataType === "ENUM" && c.dictCode) {
+      loadDict(c.dictCode);
+      return {
+        label: c.columnName,
+        prop: c.columnCode,
+        minWidth: 140,
+        formatter: (row: any) => getDictLabel(c.dictCode, row[c.columnCode])
+      };
+    }
+    return {
+      label: c.columnName,
+      prop: c.columnCode,
+      minWidth: 140
+    };
+  });
   tableColumns.push(
     {
       label: "创建时间",
@@ -228,6 +241,7 @@ export function useMetaData(
     pagination,
     searchColumns,
     tableColumns,
+    dictMap,
     exportFormatOptions,
     onSearch,
     resetForm,

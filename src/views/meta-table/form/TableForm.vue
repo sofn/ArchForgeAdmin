@@ -80,6 +80,7 @@ function openFieldDialog(field?: MetaColumn, index?: number) {
           indexGroup: undefined,
           sort: 0,
           options: [],
+          dictCode: undefined,
           arrayElementType: undefined,
           searchType: "LIKE"
         }
@@ -208,6 +209,11 @@ defineExpose({ getRef, getForm });
       <el-table-column label="搜索方式" width="100">
         <template #default="{ row }">
           {{ row.searchType ?? "-" }}
+        </template>
+      </el-table-column>
+      <el-table-column label="字典编码" width="140">
+        <template #default="{ row }">
+          {{ row.dataType === "ENUM" ? (row.dictCode ?? "-") : "-" }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="120" fixed="right">

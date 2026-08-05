@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { message } from "@/utils/message";
 import type { DataFormProps, MetaColumn } from "../utils/types";
+import { useDict } from "@/utils/dict";
 
 const props = defineProps({
   formInline: {
@@ -16,6 +17,7 @@ const props = defineProps({
 
 const ruleFormRef = ref();
 const newFormInline = ref<Record<string, any>>(props.formInline);
+const { dictMap, loadDict } = useDict();
 
 const auditColumns = [
   "id",
@@ -39,6 +41,20 @@ const uploadUrl = "/api/file/upload";
 function getRef() {
   return ruleFormRef.value;
 }
+
+async function loadColumnDicts() {
+  for (const column of visibleColumns.value) {
+    if (column.dataType === "ENUM" && column.dictCode) {
+      await loadDict(column.dictCode);
+    }
+  }
+}
+
+onMounted(() => {
+  loadColumnDicts();
+});
+
+watch(() => props.columns, loadColumnDicts, { deep: true });
 
 function getData() {
   const result = { ...newFormInline.value };
@@ -232,7 +248,7 @@ defineExpose({ getRef, getData });
         class="w-full!"
       >
         <el-option
-          v-for="opt in column.options"
+          v-for="opt in dictMap[column.dictCode] || column.options || []"
           :key="opt.value"
           :label="opt.label"
           :value="opt.value"

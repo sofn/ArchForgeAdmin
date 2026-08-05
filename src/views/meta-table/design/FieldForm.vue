@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { fieldRules } from "../utils/rule";
-import type { FieldFormProps, OptionItem } from "../utils/types";
+import type { FieldFormProps } from "../utils/types";
+import { getDictTypePage } from "@/api/dict";
+import type { DictType } from "@/api/dict";
 
 const props = defineProps({
   formInline: {
@@ -24,6 +26,7 @@ const props = defineProps({
       indexGroup: undefined,
       sort: 0,
       options: [],
+      dictCode: undefined,
       arrayElementType: undefined,
       searchType: "LIKE"
     })
@@ -32,6 +35,8 @@ const props = defineProps({
 
 const ruleFormRef = ref();
 const newFormInline = ref<FieldFormProps["formInline"]>(props.formInline);
+const dictTypes = ref<DictType[]>([]);
+const dictTypeLoading = ref(false);
 
 const dataTypeOptions = [
   { label: "文本", value: "STRING" },
@@ -67,7 +72,7 @@ const indexTypeOptions = [
 ];
 
 const fileTypes = ["FILE", "IMAGE", "MULTI_IMAGE"];
-const showLength = ["STRING", ...fileTypes];
+const showLength = ["STRING", "ENUM", ...fileTypes];
 const showPrecision = ["DECIMAL"];
 const showEnum = ["ENUM"];
 const showArrayElement = ["ARRAY"];
@@ -130,6 +135,10 @@ function getRef() {
 watch(
   () => newFormInline.value.dataType,
   type => {
+    if (type !== "ENUM") {
+      newFormInline.value.dictCode = undefined;
+      newFormInline.value.options = [];
+    }
     const options = searchTypeOptions(type);
     const defaultType = options[0].value;
     if (
@@ -141,18 +150,6 @@ watch(
   },
   { immediate: true }
 );
-
-function addOption() {
-  const options = newFormInline.value.options ?? [];
-  options.push({ label: "", value: "" });
-  newFormInline.value.options = [...options];
-}
-
-function removeOption(index: number) {
-  const options = newFormInline.value.options ?? [];
-  options.splice(index, 1);
-  newFormInline.value.options = [...options];
-}
 
 function defaultValuePlaceholder() {
   const type = newFormInline.value.dataType;
@@ -167,6 +164,22 @@ function defaultValuePlaceholder() {
   }
   return "请输入默认值";
 }
+
+async function loadDictTypes() {
+  dictTypeLoading.value = true;
+  try {
+    const res = await getDictTypePage({ currentPage: 1, pageSize: 1000 });
+    if (res?.code === 0) {
+      dictTypes.value = res.data?.list || [];
+    }
+  } finally {
+    dictTypeLoading.value = false;
+  }
+}
+
+onMounted(() => {
+  loadDictTypes();
+});
 
 defineExpose({ getRef });
 </script>
@@ -253,20 +266,24 @@ defineExpose({ getRef });
     </el-form-item>
     <el-form-item
       v-if="showEnum.includes(newFormInline.dataType)"
-      label="枚举选项"
+      label="选择字典"
+      prop="dictCode"
     >
-      <div class="w-full">
-        <div
-          v-for="(opt, idx) in newFormInline.options"
-          :key="idx"
-          class="flex gap-2 mb-2"
-        >
-          <el-input v-model="opt.label" placeholder="显示值" />
-          <el-input v-model="opt.value" placeholder="实际值" />
-          <el-button type="danger" @click="removeOption(idx)">删除</el-button>
-        </div>
-        <el-button type="primary" @click="addOption">新增选项</el-button>
-      </div>
+      <el-select
+        v-model="newFormInline.dictCode"
+        class="w-full!"
+        placeholder="请选择字典"
+        filterable
+        clearable
+        :loading="dictTypeLoading"
+      >
+        <el-option
+          v-for="item in dictTypes"
+          :key="item.dictCode"
+          :label="item.dictName"
+          :value="item.dictCode"
+        />
+      </el-select>
     </el-form-item>
     <el-form-item label="约束">
       <el-checkbox v-model="newFormInline.required">必填</el-checkbox>

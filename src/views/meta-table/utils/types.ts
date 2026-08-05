@@ -22,6 +22,7 @@ export interface MetaColumn {
   indexGroup?: string;
   sort?: number;
   options?: OptionItem[];
+  dictCode?: string;
   arrayElementType?: string;
   searchType?: string;
 }

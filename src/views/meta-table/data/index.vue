@@ -40,6 +40,7 @@ const {
   pagination,
   searchColumns,
   tableColumns,
+  dictMap,
   exportFormatOptions,
   onSearch,
   resetForm,
@@ -163,7 +164,7 @@ const {
             class="w-45!"
           >
             <el-option
-              v-for="opt in col.options"
+              v-for="opt in dictMap[col.dictCode] || col.options || []"
               :key="opt.value"
               :label="opt.label"
               :value="opt.value"
