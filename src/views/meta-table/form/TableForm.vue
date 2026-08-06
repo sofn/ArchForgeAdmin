@@ -39,7 +39,8 @@ const dataTypeOptions = [
   { label: "日期时间", value: "DATETIME" },
   { label: "枚举", value: "ENUM" },
   { label: "JSON", value: "JSON" },
-  { label: "文件", value: "FILE" }
+  { label: "文件", value: "FILE" },
+  { label: "关联", value: "REFERENCE" }
 ];
 
 function getRef() {
@@ -67,7 +68,10 @@ function openFieldDialog(field?: MetaColumn, index?: number) {
           listVisible: true,
           index: false,
           sort: 0,
-          options: []
+          options: [],
+          referenceTable: undefined,
+          referenceColumn: "id",
+          displayExpression: undefined
         }
       )
     },
@@ -171,6 +175,15 @@ defineExpose({ getRef });
       <el-table-column label="类型" min-width="100">
         <template #default="{ row }">
           {{ getDataTypeLabel(row.dataType) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="关联信息" min-width="180">
+        <template #default="{ row }">
+          {{
+            row.dataType === "REFERENCE"
+              ? `${row.referenceTable || ""}.${row.referenceColumn || "id"}`
+              : ""
+          }}
         </template>
       </el-table-column>
       <el-table-column label="必填" width="80">

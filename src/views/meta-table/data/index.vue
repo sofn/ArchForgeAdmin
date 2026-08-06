@@ -71,7 +71,18 @@ const {
         :label="`${col.columnName}：`"
         :prop="col.columnCode"
       >
-        <el-input v-model="filters[col.columnCode]" clearable class="w-45!" />
+        <el-input-number
+          v-if="['INTEGER', 'DECIMAL', 'REFERENCE'].includes(col.dataType)"
+          v-model="filters[col.columnCode]"
+          controls-position="right"
+          class="w-45!"
+        />
+        <el-input
+          v-else
+          v-model="filters[col.columnCode]"
+          clearable
+          class="w-45!"
+        />
       </el-form-item>
       <el-form-item>
         <el-button

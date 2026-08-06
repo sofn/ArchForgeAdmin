@@ -24,7 +24,10 @@ const props = defineProps({
       indexGroup: undefined,
       sort: 0,
       options: [],
-      arrayElementType: undefined
+      arrayElementType: undefined,
+      referenceTable: undefined,
+      referenceColumn: "id",
+      displayExpression: undefined
     })
   }
 });
@@ -46,7 +49,8 @@ const dataTypeOptions = [
   { label: "JSON", value: "JSON" },
   { label: "数组", value: "ARRAY" },
   { label: "地理位置", value: "GEO" },
-  { label: "文件", value: "FILE" }
+  { label: "文件", value: "FILE" },
+  { label: "关联", value: "REFERENCE" }
 ];
 
 const arrayElementTypeOptions = [
@@ -67,6 +71,7 @@ const showLength = ["STRING", "FILE"];
 const showPrecision = ["DECIMAL"];
 const showEnum = ["ENUM"];
 const showArrayElement = ["ARRAY"];
+const showReference = ["REFERENCE"];
 const showIndexConfig = [
   "STRING",
   "TEXT",
@@ -185,6 +190,26 @@ defineExpose({ getRef });
         />
       </el-select>
     </el-form-item>
+    <template v-if="showReference.includes(newFormInline.dataType)">
+      <el-form-item label="关联表" prop="referenceTable">
+        <el-input
+          v-model="newFormInline.referenceTable"
+          placeholder="例如：sys_user 或 meta_other_table"
+        />
+      </el-form-item>
+      <el-form-item label="关联字段" prop="referenceColumn">
+        <el-input
+          v-model="newFormInline.referenceColumn"
+          placeholder="默认为 id"
+        />
+      </el-form-item>
+      <el-form-item label="显示表达式" prop="displayExpression">
+        <el-input
+          v-model="newFormInline.displayExpression"
+          placeholder="例如：ref.username || ' - ' || ref.email"
+        />
+      </el-form-item>
+    </template>
     <el-form-item label="默认值" prop="defaultValue">
       <el-input
         v-model="newFormInline.defaultValue"

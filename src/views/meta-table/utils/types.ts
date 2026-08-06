@@ -23,6 +23,9 @@ export interface MetaColumn {
   sort?: number;
   options?: OptionItem[];
   arrayElementType?: string;
+  referenceTable?: string;
+  referenceColumn?: string;
+  displayExpression?: string;
 }
 
 export interface MetaTable {

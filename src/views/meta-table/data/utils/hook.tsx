@@ -33,11 +33,18 @@ export function useMetaData(
 
   const searchColumns = allColumns.filter(c => c.searchable);
 
-  const tableColumns: TableColumnList = columns.map(c => ({
-    label: c.columnName,
-    prop: c.columnCode,
-    minWidth: 140
-  }));
+  const tableColumns: TableColumnList = columns.map(c => {
+    const col: any = {
+      label: c.columnName,
+      prop: c.columnCode,
+      minWidth: 140
+    };
+    if (c.dataType === "REFERENCE") {
+      col.formatter = (row: any) =>
+        row[c.columnCode + "_display"] ?? row[c.columnCode];
+    }
+    return col;
+  });
   tableColumns.push({
     label: "操作",
     fixed: "right",

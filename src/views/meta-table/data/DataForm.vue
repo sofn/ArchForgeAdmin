@@ -21,7 +21,7 @@ const visibleColumns = computed(() =>
 );
 
 const textTypes = ["STRING", "TEXT", "FILE", "UUID"];
-const numberTypes = ["INTEGER", "DECIMAL"];
+const numberTypes = ["INTEGER", "DECIMAL", "REFERENCE"];
 
 function getRef() {
   return ruleFormRef.value;
