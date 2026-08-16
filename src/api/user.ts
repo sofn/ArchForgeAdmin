@@ -96,22 +96,24 @@ export type LoginConfigResult = {
 
 /** 登录 */
 export const getLogin = (data?: object) => {
-  return http.request<UserResult>("post", "/login", { data });
+  return http.request<UserResult>("post", "/auth/login", { data });
 };
 
 /** 获取验证码 */
 export const getCaptcha = () => {
-  return http.request<CaptchaResult>("get", "/captchaImage");
+  return http.request<CaptchaResult>("get", "/auth/captchaImage");
 };
 
 /** 获取登录配置 */
 export const getLoginConfig = () => {
-  return http.request<LoginConfigResult>("get", "/getConfig");
+  return http.request<LoginConfigResult>("get", "/auth/getConfig");
 };
 
 /** 刷新`token` */
 export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>("post", "/refresh-token", { data });
+  return http.request<RefreshTokenResult>("post", "/auth/refresh-token", {
+    data
+  });
 };
 
 /** 账户设置-个人信息 */

@@ -50,7 +50,7 @@ export type QuartzLog = {
 
 /** 查询 Quartz 任务列表（分页） */
 export const listQuartzJobs = (data: object) =>
-  http.request<ResultPage<QuartzJob>>("post", "/quartz/list", { data });
+  http.request<ResultPage<QuartzJob>>("get", "/quartz", { params: data });
 
 /** 新增 Quartz 任务 */
 export const addQuartzJob = (data: object) =>
@@ -62,7 +62,7 @@ export const updateQuartzJob = (id: number, data: object) =>
 
 /** 删除 Quartz 任务（软删除 + 取消调度） */
 export const deleteQuartzJob = (id: number) =>
-  http.request<Result>("delete", `/quartz/delete/${id}`);
+  http.request<Result>("delete", `/quartz/${id}`);
 
 /** 暂停 Quartz 任务 */
 export const pauseQuartzJob = (id: number) =>
@@ -78,7 +78,7 @@ export const runQuartzJob = (id: number) =>
 
 /** 查询任务执行日志 */
 export const listQuartzLogs = (data: object) =>
-  http.request<ResultPage<QuartzLog>>("post", "/quartz/log/list", { data });
+  http.request<ResultPage<QuartzLog>>("get", "/quartz/log", { params: data });
 
 /** 校验 cron 表达式 */
 export const validateCron = (cron: string) =>

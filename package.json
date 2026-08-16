@@ -1,6 +1,6 @@
 {
-  "name": "vue-pure-admin",
-  "version": "7.0.0",
+  "name": "archforge-admin",
+  "version": "0.1.0-SNAPSHOT",
   "private": true,
   "type": "module",
   "scripts": {
@@ -175,7 +175,7 @@
     "vue-tsc": "^3.3.3"
   },
   "engines": {
-    "node": ">=22.22.1",
-    "pnpm": ">=11"
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
   }
 }
