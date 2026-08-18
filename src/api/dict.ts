@@ -37,12 +37,12 @@ export const getDictTypePage = (data: {
   currentPage?: number;
   pageSize?: number;
   keyword?: string;
-}) => http.request<DictTypePageResult>("post", "/dict/type", { data });
+}) => http.request<DictTypePageResult>("post", "/system/dict/type", { data });
 
 export const getDictTypeByCode = (dictCode: string) =>
   http.request<{ code: number; message: string; data: DictTypeDetail }>(
     "get",
-    `/dict/type/${dictCode}`
+    `/system/dict/type/${dictCode}`
   );
 
 export const createDictType = (data: {
@@ -55,21 +55,21 @@ export const createDictType = (data: {
 }) =>
   http.request<{ code: number; message: string; data: number }>(
     "post",
-    "/dict/type/create",
+    "/system/dict/type/create",
     { data }
   );
 
 export const updateDictType = (id: number, data: Partial<DictType>) =>
   http.request<{ code: number; message: string; data: boolean }>(
     "put",
-    `/dict/type/${id}`,
+    `/system/dict/type/${id}`,
     { data }
   );
 
 export const deleteDictType = (id: number) =>
   http.request<{ code: number; message: string; data: boolean }>(
     "delete",
-    `/dict/type/${id}`
+    `/system/dict/type/${id}`
   );
 
 export const createDictItem = (
@@ -78,7 +78,7 @@ export const createDictItem = (
 ) =>
   http.request<{ code: number; message: string; data: number }>(
     "post",
-    `/dict/type/${typeId}/item`,
+    `/system/dict/type/${typeId}/item`,
     { data }
   );
 
@@ -88,12 +88,12 @@ export const updateDictItem = (
 ) =>
   http.request<{ code: number; message: string; data: boolean }>(
     "put",
-    `/dict/item/${id}`,
+    `/system/dict/item/${id}`,
     { data }
   );
 
 export const deleteDictItem = (id: number) =>
   http.request<{ code: number; message: string; data: boolean }>(
     "delete",
-    `/dict/item/${id}`
+    `/system/dict/item/${id}`
   );

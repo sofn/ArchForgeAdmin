@@ -19,12 +19,12 @@ type ResultPage = {
 
 /** 获取文件列表 */
 export const getFileList = (data?: object) => {
-  return http.request<ResultPage>("post", "/file/list", { data });
+  return http.request<ResultPage>("get", "/file", { params: data });
 };
 
 /** 删除文件 */
-export const deleteFile = (data?: object) => {
-  return http.request<Result>("post", "/file/delete", { data });
+export const deleteFile = (data?: { id: number }) => {
+  return http.request<Result>("delete", `/file/${data?.id}`);
 };
 
 /** 下载文件 */
