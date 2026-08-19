@@ -8,14 +8,14 @@ The shell is [vue-pure-admin](https://github.com/pure-admin/vue-pure-admin) 7.x 
 
 ## Backend
 
-| Item | Value |
-|------|--------|
-| This repo | Admin UI, dev port **8848** |
-| Backend | `../ArchForge` → `archforge-server-admin` **:8080** |
-| Dev proxy | Vite `/api` → `http://localhost:8080` |
-| Auth | sa-token; cookie `authorized-token` |
-| Success body | `{ code, message, data }` (`code === 0`) |
-| Contract | `../ArchForgeSpec/api/openapi.yaml` |
+| Item         | Value                                               |
+| ------------ | --------------------------------------------------- |
+| This repo    | Admin UI, dev port **8848**                         |
+| Backend      | `../ArchForge` → `archforge-server-admin` **:8080** |
+| Dev proxy    | Vite `/api` → `http://localhost:8080`               |
+| Auth         | sa-token; cookie `authorized-token`                 |
+| Success body | `{ code, message, data }` (`code === 0`)            |
+| Contract     | `../ArchForgeSpec/api/openapi.yaml`                 |
 
 Do not point this app at `server-web` :8081. The C-end client is `ArchForgeWeb`.
 
@@ -24,7 +24,6 @@ Do not point this app at `server-web` :8081. The C-end client is `ArchForgeWeb`.
 ```bash
 # Backend (ArchForge repo)
 ./gradlew :archforge-server-admin:bootRun   # :8080
-# if the module is not renamed yet: ./gradlew :server-admin:bootRun
 
 # This repo
 pnpm install

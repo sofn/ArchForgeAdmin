@@ -8,14 +8,14 @@ ArchForge 的 **管理端 UI**（不是裸的 vue-pure-admin 模板）。对接�
 
 ## 和后端的关系
 
-| 项 | 值 |
-|----|----|
-| 本仓库 | 管理端前端，开发端口 **8848** |
-| 后端 | `../ArchForge` → `archforge-server-admin` **:8080** |
-| 开发代理 | Vite `/api` → `http://localhost:8080` |
-| 认证 | sa-token；Cookie `authorized-token` |
-| 成功响应 | `{ code, message, data }`，`code === 0` 为成功 |
-| 契约 | `../ArchForgeSpec/api/openapi.yaml` |
+| 项       | 值                                                  |
+| -------- | --------------------------------------------------- |
+| 本仓库   | 管理端前端，开发端口 **8848**                       |
+| 后端     | `../ArchForge` → `archforge-server-admin` **:8080** |
+| 开发代理 | Vite `/api` → `http://localhost:8080`               |
+| 认证     | sa-token；Cookie `authorized-token`                 |
+| 成功响应 | `{ code, message, data }`，`code === 0` 为成功      |
+| 契约     | `../ArchForgeSpec/api/openapi.yaml`                 |
 
 不要把本仓库指到 `server-web` :8081。C 端在 `ArchForgeWeb`。
 
@@ -24,7 +24,6 @@ ArchForge 的 **管理端 UI**（不是裸的 vue-pure-admin 模板）。对接�
 ```bash
 # 后端（ArchForge 仓库）
 ./gradlew :archforge-server-admin:bootRun   # :8080
-# 若模块尚未重命名： ./gradlew :server-admin:bootRun
 
 # 本仓库
 pnpm install
