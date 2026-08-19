@@ -21,8 +21,11 @@ archforge/
 
 - This repo is the **admin client**, based on `vue-pure-admin` 7.0
   (Vue 3.5 + Vite 8 + Element Plus + Pinia + vue-router 5).
-- Backend: `../ArchForge` → `server-admin` (port 8080). Do **not** modify backend
-  source from this repository.
+- Backend: `../ArchForge` → `archforge-server-admin` (port 8080). Do **not**
+  modify backend source from this repository.
+- Auth: sa-token `token` / `refreshToken` (not Spring Security JWT filters).
+- Responses: `{code,message,data}` (`code === 0` is success).
+- Commands: `pnpm dev` (8848), `pnpm typecheck`, `pnpm lint`, `pnpm build`.
 - Contracts are owned by `../ArchForgeSpec` (`api/openapi.yaml` OpenAPI 3.1).
   If an API does not fit a need, check the contract first and raise the change in
   `ArchForgeSpec` — do not hack around it here.

@@ -1,4 +1,4 @@
-<h1>vue-pure-admin</h1>
+<h1>ArchForgeAdmin</h1>
 
 ![GitHub license](https://img.shields.io/github/license/pure-admin/vue-pure-admin?style=flat)
 ![GitHub stars](https://img.shields.io/github/stars/pure-admin/vue-pure-admin?color=fa6470&style=flat)
@@ -8,8 +8,9 @@
 
 ## 简介
 
-`vue-pure-admin` 是一款开源免费且开箱即用的中后台管理系统模版。完全采用 `ECMAScript` 模块（`ESM`）规范来编写和组织代码，使用了最新的 `Vue3`、
-`Vite`、`Element-Plus`、`TypeScript`、`Pinia`、`Tailwindcss` 等主流技术开发
+ArchForgeAdmin 是 ArchForge 五仓里的 **管理端 UI**，基于 [vue-pure-admin](https://github.com/pure-admin/vue-pure-admin) 二次定制。消费后端 `archforge-server-admin`（`:8080`），认证为 **sa-token**（`token` / `refreshToken`），接口约定 `{code,message,data}`。
+
+上游模版说明：`vue-pure-admin` 是一款开源免费中后台模版，采用 ESM + Vue3 + Vite + Element Plus + TypeScript + Pinia + Tailwindcss。
 
 ## 研发理念
 

@@ -54,12 +54,12 @@ ArchForgeAdmin is an admin management UI based on [vue-pure-admin](https://githu
 
 ### Key Patterns
 
-- **Authentication:** JWT-based with accessToken/refreshToken pattern
+- **Authentication:** sa-token with `token` / `refreshToken`
   - Tokens stored in Cookie (`authorized-token`) and localStorage (`user-info`)
-  - Auto-refresh when accessToken expires using refreshToken
+  - Auto-refresh when token expires using refreshToken
   - `Authorization: Bearer <token>` header format
 - **API Layer:** Centralized HTTP client in `src/utils/http/index.ts`
-  - Auto-attaches JWT token to requests
+  - Auto-attaches sa-token to requests
   - Token refresh interceptor with request queuing
   - White-listed endpoints: `/refresh-token`, `/login`
 - **Permission System:**
