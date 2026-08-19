@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-ArchForgeAdmin is an admin management UI based on [vue-pure-admin](https://github.com/pure-admin/vue-pure-admin). It serves as the frontend for the ArchForge backend management system.
+ArchForgeAdmin is the ArchForge **admin UI** (vue-pure-admin based). It talks to **server-admin on port 8080** with **sa-token**. Dev server: **8848** (`VITE_PORT`). Axios `baseURL` is `/api`, proxied to `http://localhost:8080`.
 
 ## Build Commands
 
@@ -17,7 +17,7 @@ ArchForgeAdmin is an admin management UI based on [vue-pure-admin](https://githu
 - `pnpm lint:prettier`: Prettier only
 - `pnpm lint:stylelint`: Stylelint only
 - `pnpm preview`: Preview production build
-- Requires Node.js >= 20.19.0 or >= 22.13.0, pnpm >= 9
+- Requires Node.js >= 22, pnpm >= 9
 
 ## Tech Stack
 
