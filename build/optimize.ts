@@ -24,7 +24,6 @@ const include = [
   "vue-tippy",
   "cropperjs",
   "jsbarcode",
-  "codemirror",
   "pinyin-pro",
   "sortablejs",
   "swiper/vue",
@@ -46,11 +45,9 @@ const include = [
   "@howdyjs/mouse-menu",
   "@logicflow/extension",
   "vue-virtual-scroller",
-  "codemirror-editor-vue3",
   "@amap/amap-jsapi-loader",
   "el-table-infinite-scroll",
   "vue-waterfall-plugin-next",
-  "@infectoone/vue-ganttastic",
   "@wangeditor/editor-for-vue",
   "vuedraggable/src/vuedraggable"
 ];

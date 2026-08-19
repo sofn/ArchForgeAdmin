@@ -2,8 +2,6 @@
 
 const home = 0, // 平台规定只有 home 路由的 rank 才能为 0 ，所以后端在返回 rank 的时候需要从非 0 开始
   chatai = 1,
-  vueflow = 2,
-  ganttastic = 3,
   components = 4,
   able = 5,
   table = 6,
@@ -18,22 +16,17 @@ const home = 0, // 平台规定只有 home 路由的 rank 才能为 0 ，所以�
   monitor = 15,
   tabs = 16,
   about = 17,
-  codemirror = 18,
   markdown = 19,
   editor = 20,
-  flowchart = 21,
   formdesign = 22,
   board = 23,
   ppt = 24,
   mind = 25,
-  guide = 26,
-  menuoverflow = 27;
+  guide = 26;
 
 export {
   home,
   chatai,
-  vueflow,
-  ganttastic,
   components,
   able,
   table,
@@ -48,14 +41,11 @@ export {
   monitor,
   tabs,
   about,
-  codemirror,
   markdown,
   editor,
-  flowchart,
   formdesign,
   board,
   ppt,
   mind,
-  guide,
-  menuoverflow
+  guide
 };
