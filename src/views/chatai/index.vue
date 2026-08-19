@@ -1,150 +1,84 @@
 <script setup lang="ts">
-import { h } from "vue";
-import { ElEmpty } from "element-plus";
-import { deviceDetection } from "@pureadmin/utils";
+import { onMounted, ref } from "vue";
 import {
-  ChatGPT,
-  Bard,
-  Bing,
-  iMessage,
-  Blue,
-  LoFi,
-  Red,
-  Dark,
-  FullInput,
-  Group,
-  MessageCode,
-  Speech,
-  IntroPanel
-} from "./components";
+  createChatSession,
+  getChatConfig,
+  streamChatMessage,
+  type ChatConfigStatus
+} from "@/api/chat";
+import { message } from "@/utils/message";
 
 defineOptions({
   name: "ChatAi"
 });
 
-const swiperExample: any[] = [
-  { id: 0, label: "ChatGPT 风格", component: ChatGPT },
-  {
-    id: 1,
-    label: "Gemini 风格",
-    component: Bard
-  },
-  {
-    id: 2,
-    label: "BingChat 风格",
-    component: Bing
-  },
-  {
-    id: 3,
-    label: "iMessage 风格",
-    component: iMessage
-  },
-  {
-    id: 4,
-    label: "蓝色主题且可设置背景图像",
-    component: Blue
-  },
-  {
-    id: 5,
-    label: "渐变主题且可设置背景图像",
-    component: LoFi
-  },
-  {
-    id: 6,
-    label: "红色风格",
-    component: Red
-  },
-  {
-    id: 7,
-    label: "深色模式",
-    component: Dark
-  },
-  {
-    id: 8,
-    label: "全宽输入框",
-    component: FullInput
-  },
-  {
-    id: 9,
-    label: "分组消息",
-    component: Group
-  },
-  {
-    id: 10,
-    label: "代码消息",
-    component: MessageCode
-  },
-  {
-    id: 11,
-    label: "语音输入",
-    component: Speech
-  },
-  {
-    id: 12,
-    label: "简介面板",
-    component: IntroPanel
-  },
-  {
-    id: 13,
-    label: "更多示例",
-    component: h(ElEmpty, {
-      description: "敬请期待",
-      style: { minWidth: "320px", height: "350px" }
-    })
+const config = ref<ChatConfigStatus>();
+const sessionId = ref("");
+const input = ref("");
+const reply = ref("");
+const sending = ref(false);
+
+onMounted(async () => {
+  const status = await getChatConfig();
+  config.value = status.data;
+  const session = await createChatSession();
+  sessionId.value = session.data.id;
+});
+
+async function onSend() {
+  if (!input.value.trim() || !sessionId.value) return;
+  if (!config.value?.configured) {
+    message("请先在后端配置 LLM_API_KEY / LLM_PROVIDER / LLM_BASE_URL", {
+      type: "warning"
+    });
+    return;
   }
-];
+  sending.value = true;
+  reply.value = "";
+  try {
+    await streamChatMessage(sessionId.value, input.value, text => {
+      reply.value += text;
+    });
+    input.value = "";
+  } catch (error) {
+    message(String(error), { type: "error" });
+  } finally {
+    sending.value = false;
+  }
+}
 </script>
 
 <template>
   <el-card shadow="never">
-    <template #header>
-      <div class="card-header">
-        <span class="font-medium">
-          Ai聊天组件，采用开源的
-          <el-link
-            href="https://deepchat.dev/"
-            target="_blank"
-            style="margin: 0 4px 5px; font-size: 16px"
-          >
-            deep-chat
-          </el-link>
-        </span>
-      </div>
-      <el-link
-        class="mt-2"
-        href="https://github.com/pure-admin/vue-pure-admin/blob/main/src/views/chatai"
-        target="_blank"
+    <template #header>ChatAI（OpenAI / Anthropic 兼容）</template>
+    <p class="mb-3 text-sm">
+      Provider: {{ config?.provider || "-" }} / Model:
+      {{ config?.model || "-" }}
+      /
+      {{ config?.configured ? "已配置 API Key" : "未配置 API Key" }}
+    </p>
+    <p class="mb-4 text-sm text-text_color_regular">
+      在 ArchForge `.env` 或环境变量中填写
+      `LLM_PROVIDER=openai|anthropic`、`LLM_BASE_URL`、`LLM_API_KEY`、`LLM_MODEL`。
+    </p>
+    <el-input
+      v-model="input"
+      type="textarea"
+      :rows="4"
+      placeholder="输入问题后发送，后端以 SSE 返回 delta/done"
+    />
+    <div class="mt-3">
+      <el-button type="primary" :loading="sending" @click="onSend"
+        >发送</el-button
       >
-        代码位置 src/views/chatai
-      </el-link>
-    </template>
-    <el-space wrap>
-      <el-card
-        v-for="item in swiperExample"
-        :key="item.id"
-        :class="['mt-4', !deviceDetection() && 'ml-16']"
-      >
-        <template #header>
-          {{ item.label }}
-        </template>
-        <component :is="item.component" />
-      </el-card>
-    </el-space>
+    </div>
+    <el-input
+      class="mt-4"
+      type="textarea"
+      :rows="10"
+      readonly
+      :model-value="reply"
+      placeholder="模型回复"
+    />
   </el-card>
 </template>
-
-<style lang="scss" scoped>
-:deep(.el-card__body) {
-  overflow: auto;
-}
-
-@media screen and (width <= 750px) {
-  :deep(.el-card__body) {
-    padding: 12px;
-  }
-
-  .main-content {
-    margin: 0 !important;
-  }
-}
-</style>

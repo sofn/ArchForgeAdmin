@@ -1,75 +1,91 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
+import { getAllRoleList } from "@/api/system";
+import {
+  getPermissionMenuTree,
+  getRolePermissions,
+  saveRolePermissions,
+  type PermissionMenuNode
+} from "@/api/permission-matrix";
 import { message } from "@/utils/message";
-import { initRouter } from "@/router/utils";
-import { storageLocal } from "@pureadmin/utils";
-import { type CSSProperties, ref, computed } from "vue";
-import { useUserStoreHook } from "@/store/modules/user";
-import { usePermissionStoreHook } from "@/store/modules/permission";
 
 defineOptions({
   name: "PermissionPage"
 });
 
-const elStyle = computed((): CSSProperties => {
-  return {
-    width: "85vw",
-    justifyContent: "start"
-  };
-});
+const roles = ref<Array<{ id: number; name: string }>>([]);
+const tree = ref<PermissionMenuNode[]>([]);
+const checked = ref<number[]>([]);
+const roleId = ref<number>();
+const loading = ref(false);
 
-const username = ref(useUserStoreHook()?.username);
-
-const options = [
-  {
-    value: "admin",
-    label: "管理员角色"
-  },
-  {
-    value: "common",
-    label: "普通角色"
-  }
-];
-
-function onChange() {
-  useUserStoreHook()
-    .loginByUsername({ username: username.value, password: "admin123" })
-    .then(() => {
-      storageLocal().removeItem("async-routes");
-      usePermissionStoreHook().clearAllCachePage();
-      initRouter();
-    })
-    .catch(err => {
-      message(err, { type: "error" });
-    });
+function flattenIds(nodes: PermissionMenuNode[]): number[] {
+  return nodes.flatMap(node => [node.id, ...flattenIds(node.children ?? [])]);
 }
+
+async function load() {
+  const [roleRes, treeRes] = await Promise.all([
+    getAllRoleList(),
+    getPermissionMenuTree()
+  ]);
+  roles.value = (roleRes.data ?? []).map((item: any) => ({
+    id: item.id ?? item.roleId,
+    name: item.name ?? item.roleName
+  }));
+  tree.value = treeRes.data ?? [];
+  if (roles.value[0]) {
+    roleId.value = roles.value[0].id;
+    await loadRole();
+  }
+}
+
+async function loadRole() {
+  if (!roleId.value) return;
+  const res = await getRolePermissions(roleId.value);
+  checked.value = res.data ?? [];
+}
+
+async function onSave() {
+  if (!roleId.value) return;
+  loading.value = true;
+  try {
+    await saveRolePermissions(roleId.value, checked.value);
+    message("权限已保存", { type: "success" });
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(load);
 </script>
 
 <template>
-  <div>
-    <p class="mb-2!">
-      模拟后台根据不同角色返回对应路由，观察左侧菜单变化（管理员角色可查看系统管理菜单、普通角色不可查看系统管理菜单）
-    </p>
-    <el-card shadow="never" :style="elStyle">
-      <template #header>
-        <div class="card-header">
-          <span>当前角色：{{ username }}</span>
-        </div>
-        <el-link
-          class="mt-2"
-          href="https://github.com/pure-admin/vue-pure-admin/blob/main/src/views/permission/page/index.vue"
-          target="_blank"
-        >
-          代码位置 src/views/permission/page/index.vue
-        </el-link>
-      </template>
-      <el-select v-model="username" class="w-40!" @change="onChange">
+  <el-card shadow="never">
+    <template #header>角色权限矩阵</template>
+    <div class="flex gap-4 mb-4">
+      <el-select v-model="roleId" class="w-60" @change="loadRole">
         <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          v-for="item in roles"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
         />
       </el-select>
-    </el-card>
-  </div>
+      <el-button type="primary" :loading="loading" @click="onSave"
+        >保存</el-button
+      >
+    </div>
+    <el-tree
+      :data="tree"
+      node-key="id"
+      show-checkbox
+      default-expand-all
+      :props="{ label: 'name', children: 'children' }"
+      :default-checked-keys="checked"
+      @check="(_: unknown, state: any) => (checked = state.checkedKeys)"
+    />
+    <p class="mt-3 text-sm text-text_color_regular">
+      共 {{ flattenIds(tree).length }} 个权限点
+    </p>
+  </el-card>
 </template>

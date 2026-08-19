@@ -1,36 +1,89 @@
 <script setup lang="ts">
-import { ref, markRaw } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import ReCol from "@/components/ReCol";
-import { useDark, randomGradient } from "./utils";
-import WelcomeTable from "./components/table/index.vue";
+import { useDark } from "./utils";
 import { ReNormalCountTo } from "@/components/ReCountTo";
-import { useRenderFlicker } from "@/components/ReFlicker";
-import { ChartBar, ChartLine, ChartRound } from "./components/charts";
-import Segmented, { type OptionsType } from "@/components/ReSegmented";
-import { chartData, barChartData, progressData, latestNewsData } from "./data";
+import { ChartBar, ChartLine } from "./components/charts";
+import {
+  getDashboardActivities,
+  getDashboardMetrics,
+  getDashboardTodo,
+  getDashboardTrends,
+  type DashboardActivity,
+  type DashboardMetrics,
+  type DashboardTodo,
+  type DashboardTrendPoint
+} from "@/api/dashboard";
+import GroupLine from "~icons/ri/group-line";
+import Question from "~icons/ri/question-answer-line";
+import CheckLine from "~icons/ri/chat-check-line";
+import Smile from "~icons/ri/star-smile-line";
 
 defineOptions({
   name: "Welcome"
 });
 
 const { isDark } = useDark();
+const metrics = reactive<DashboardMetrics>({
+  userCount: 0,
+  articleCount: 0,
+  metaTableCount: 0,
+  taskCount: 0
+});
+const trends = ref<DashboardTrendPoint[]>([]);
+const activities = ref<DashboardActivity[]>([]);
+const todos = ref<DashboardTodo[]>([]);
 
-let curWeek = ref(1); // 0上周、1本周
-const optionsBasis: Array<OptionsType> = [
+const cards = [
   {
-    label: "上周"
+    key: "userCount",
+    name: "用户数",
+    icon: GroupLine,
+    color: "#41b6ff",
+    bgColor: "#effaff"
   },
   {
-    label: "本周"
+    key: "articleCount",
+    name: "文章数",
+    icon: Question,
+    color: "#e85f33",
+    bgColor: "#fff5f4"
+  },
+  {
+    key: "metaTableCount",
+    name: "元表数",
+    icon: CheckLine,
+    color: "#26ce83",
+    bgColor: "#eff8f4"
+  },
+  {
+    key: "taskCount",
+    name: "任务数",
+    icon: Smile,
+    color: "#7846e5",
+    bgColor: "#f6f4fe"
   }
-];
+] as const;
+
+onMounted(async () => {
+  const [m, t, a, d] = await Promise.all([
+    getDashboardMetrics(),
+    getDashboardTrends(7),
+    getDashboardActivities(),
+    getDashboardTodo()
+  ]);
+  Object.assign(metrics, m.data);
+  trends.value = t.data ?? [];
+  activities.value = a.data ?? [];
+  todos.value = d.data ?? [];
+});
 </script>
 
 <template>
   <div>
     <el-row :gutter="24" justify="space-around">
       <re-col
-        v-for="(item, index) in chartData"
+        v-for="(item, index) in cards"
         :key="index"
         v-motion
         class="mb-4.5"
@@ -72,20 +125,17 @@ const optionsBasis: Array<OptionsType> = [
           <div class="flex justify-between items-start mt-3">
             <div class="w-1/2">
               <ReNormalCountTo
-                :duration="item.duration"
+                :duration="800"
                 :fontSize="'1.6em'"
-                :startVal="100"
-                :endVal="item.value"
+                :startVal="0"
+                :endVal="metrics[item.key]"
               />
-              <p class="font-medium text-green-500">{{ item.percent }}</p>
             </div>
             <ChartLine
-              v-if="item.data.length > 1"
               class="w-1/2!"
               :color="item.color"
-              :data="item.data"
+              :data="trends.map(point => Number(point.users))"
             />
-            <ChartRound v-else class="w-1/2!" />
           </div>
         </el-card>
       </re-col>
@@ -109,13 +159,12 @@ const optionsBasis: Array<OptionsType> = [
       >
         <el-card class="bar-card" shadow="never">
           <div class="flex justify-between">
-            <span class="text-md font-medium">分析概览</span>
-            <Segmented v-model="curWeek" :options="optionsBasis" />
+            <span class="text-md font-medium">7 日趋势</span>
           </div>
           <div class="flex justify-between items-start mt-3">
             <ChartBar
-              :requireData="barChartData[curWeek].requireData"
-              :questionData="barChartData[curWeek].questionData"
+              :requireData="trends.map(point => Number(point.users))"
+              :questionData="trends.map(point => Number(point.articles))"
             />
           </div>
         </el-card>
@@ -140,30 +189,15 @@ const optionsBasis: Array<OptionsType> = [
       >
         <el-card shadow="never">
           <div class="flex justify-between">
-            <span class="text-md font-medium">解决概率</span>
+            <span class="text-md font-medium">待办</span>
           </div>
           <div
-            v-for="(item, index) in progressData"
-            :key="index"
-            :class="[
-              'flex',
-              'justify-between',
-              'items-start',
-              index === 0 ? 'mt-8' : 'mt-[2.15rem]'
-            ]"
+            v-for="item in todos"
+            :key="item.title"
+            class="flex justify-between mt-6"
           >
-            <el-progress
-              :text-inside="true"
-              :percentage="item.percentage"
-              :stroke-width="21"
-              :color="item.color"
-              striped
-              striped-flow
-              :duration="item.duration"
-            />
-            <span class="text-nowrap ml-2 text-text_color_regular text-sm">
-              {{ item.week }}
-            </span>
+            <span>{{ item.title }}</span>
+            <el-tag>{{ item.count }}</el-tag>
           </div>
         </el-card>
       </re-col>
@@ -187,10 +221,14 @@ const optionsBasis: Array<OptionsType> = [
       >
         <el-card shadow="never">
           <div class="flex justify-between">
-            <span class="text-md font-medium">数据统计</span>
+            <span class="text-md font-medium">趋势明细</span>
           </div>
           <el-scrollbar max-height="504" class="mt-3">
-            <WelcomeTable />
+            <el-table :data="trends" size="small">
+              <el-table-column prop="date" label="日期" />
+              <el-table-column prop="users" label="用户" />
+              <el-table-column prop="articles" label="文章" />
+            </el-table>
           </el-scrollbar>
         </el-card>
       </re-col>
@@ -219,25 +257,14 @@ const optionsBasis: Array<OptionsType> = [
           <el-scrollbar max-height="504" class="mt-3">
             <el-timeline>
               <el-timeline-item
-                v-for="(item, index) in latestNewsData"
+                v-for="(item, index) in activities"
                 :key="index"
                 center
                 placement="top"
-                :icon="
-                  markRaw(
-                    useRenderFlicker({
-                      background: randomGradient({
-                        randomizeHue: true
-                      })
-                    })
-                  )
-                "
-                :timestamp="item.date"
+                :timestamp="item.time"
               >
                 <p class="text-text_color_regular text-sm">
-                  {{
-                    `新增 ${item.requiredNumber} 条问题，${item.resolveNumber} 条已解决`
-                  }}
+                  {{ item.title }}
                 </p>
               </el-timeline-item>
             </el-timeline>
