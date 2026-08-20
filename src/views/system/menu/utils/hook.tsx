@@ -23,16 +23,21 @@ export function useMenu() {
   const dataList = ref([]);
   const loading = ref(true);
 
-  const getMenuType = (type, text = false) => {
-    switch (type) {
-      case 0:
-        return text ? "菜单" : "primary";
+  const getMenuType = (row, text = false) => {
+    if (row?.isButton) {
+      return text ? "按钮" : "info";
+    }
+    switch (row?.menuType) {
       case 1:
-        return text ? "iframe" : "warning";
+        return text ? "页面" : "primary";
       case 2:
-        return text ? "外链" : "danger";
+        return text ? "目录" : "success";
       case 3:
-        return text ? "按钮" : "info";
+        return text ? "iframe" : "warning";
+      case 4:
+        return text ? "外链" : "danger";
+      default:
+        return text ? "未知" : "info";
     }
   };
 
@@ -57,12 +62,8 @@ export function useMenu() {
       prop: "menuType",
       width: 100,
       cellRenderer: ({ row, props }) => (
-        <el-tag
-          size={props.size}
-          type={getMenuType(row.menuType) as any}
-          effect="plain"
-        >
-          {getMenuType(row.menuType, true)}
+        <el-tag size={props.size} type={getMenuType(row) as any} effect="plain">
+          {getMenuType(row, true)}
         </el-tag>
       )
     },
@@ -144,7 +145,8 @@ export function useMenu() {
       title: `${title}菜单`,
       props: {
         formInline: {
-          menuType: row?.menuType ?? 0,
+          menuType: row?.menuType ?? 1,
+          isButton: row?.isButton ?? false,
           higherMenuOptions: formatHigherMenuOptions(cloneDeep(dataList.value)),
           parentId: row?.parentId ?? 0,
           title: row?.title ?? "",

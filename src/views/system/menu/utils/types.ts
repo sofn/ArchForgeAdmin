@@ -1,7 +1,9 @@
 interface FormItemProps {
   id?: number;
-  /** 菜单类型（0代表菜单、1代表iframe、2代表外链、3代表按钮）*/
+  /** 菜单类型：1=页面 2=目录 3=iframe 4=外链 */
   menuType: number;
+  /** 按钮用 isButton，不是 menuType */
+  isButton: boolean;
   higherMenuOptions: Record<string, unknown>[];
   parentId: number;
   title: string;

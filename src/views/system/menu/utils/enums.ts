@@ -2,20 +2,20 @@ import type { OptionsType } from "@/components/ReSegmented";
 
 const menuTypeOptions: Array<OptionsType> = [
   {
-    label: "菜单",
-    value: 0
-  },
-  {
-    label: "iframe",
+    label: "页面",
     value: 1
   },
   {
-    label: "外链",
+    label: "目录",
     value: 2
   },
   {
-    label: "按钮",
+    label: "iframe",
     value: 3
+  },
+  {
+    label: "外链",
+    value: 4
   }
 ];
 

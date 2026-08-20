@@ -19,7 +19,8 @@ import {
 
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
-    menuType: 0,
+    menuType: 1,
+    isButton: false,
     higherMenuOptions: [],
     parentId: 0,
     title: "",
@@ -67,7 +68,13 @@ defineExpose({ getRef });
           <Segmented
             v-model="newFormInline.menuType"
             :options="menuTypeOptions"
+            :disabled="newFormInline.isButton"
           />
+        </el-form-item>
+      </re-col>
+      <re-col>
+        <el-form-item label="按钮">
+          <el-switch v-model="newFormInline.isButton" />
         </el-form-item>
       </re-col>
 
@@ -104,7 +111,7 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-      <re-col v-if="newFormInline.menuType !== 3" :value="12" :xs="24" :sm="24">
+      <re-col v-if="!newFormInline.isButton" :value="12" :xs="24" :sm="24">
         <el-form-item label="路由名称" prop="name">
           <el-input
             v-model="newFormInline.name"
@@ -114,7 +121,7 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col v-if="newFormInline.menuType !== 3" :value="12" :xs="24" :sm="24">
+      <re-col v-if="!newFormInline.isButton" :value="12" :xs="24" :sm="24">
         <el-form-item label="路由路径" prop="path">
           <el-input
             v-model="newFormInline.path"
@@ -124,7 +131,7 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
       <re-col
-        v-show="newFormInline.menuType === 0"
+        v-show="newFormInline.menuType === 1 && !newFormInline.isButton"
         :value="12"
         :xs="24"
         :sm="24"
@@ -150,7 +157,7 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
       <re-col
-        v-show="newFormInline.menuType === 0"
+        v-show="newFormInline.menuType === 1 && !newFormInline.isButton"
         :value="12"
         :xs="24"
         :sm="24"
@@ -164,22 +171,12 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col
-        v-show="newFormInline.menuType !== 3"
-        :value="12"
-        :xs="24"
-        :sm="24"
-      >
+      <re-col v-show="!newFormInline.isButton" :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单图标">
           <IconSelect v-model="newFormInline.icon" class="w-full" />
         </el-form-item>
       </re-col>
-      <re-col
-        v-show="newFormInline.menuType !== 3"
-        :value="12"
-        :xs="24"
-        :sm="24"
-      >
+      <re-col v-show="!newFormInline.isButton" :value="12" :xs="24" :sm="24">
         <el-form-item label="右侧图标">
           <el-input
             v-model="newFormInline.extraIcon"
@@ -189,7 +186,15 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col v-show="newFormInline.menuType < 2" :value="12" :xs="24" :sm="24">
+      <re-col
+        v-show="
+          (newFormInline.menuType === 1 || newFormInline.menuType === 2) &&
+          !newFormInline.isButton
+        "
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
         <el-form-item label="进场动画">
           <ReAnimateSelector
             v-model="newFormInline.enterTransition"
@@ -197,7 +202,15 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-      <re-col v-show="newFormInline.menuType < 2" :value="12" :xs="24" :sm="24">
+      <re-col
+        v-show="
+          (newFormInline.menuType === 1 || newFormInline.menuType === 2) &&
+          !newFormInline.isButton
+        "
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
         <el-form-item label="离场动画">
           <ReAnimateSelector
             v-model="newFormInline.leaveTransition"
@@ -207,7 +220,7 @@ defineExpose({ getRef });
       </re-col>
 
       <re-col
-        v-show="newFormInline.menuType === 0"
+        v-show="newFormInline.menuType === 1 && !newFormInline.isButton"
         :value="12"
         :xs="24"
         :sm="24"
@@ -220,7 +233,7 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-      <re-col v-if="newFormInline.menuType === 3" :value="12" :xs="24" :sm="24">
+      <re-col v-if="newFormInline.isButton" :value="12" :xs="24" :sm="24">
         <!-- 按钮级别权限设置 -->
         <el-form-item label="权限标识" prop="auths">
           <el-input
@@ -232,7 +245,7 @@ defineExpose({ getRef });
       </re-col>
 
       <re-col
-        v-show="newFormInline.menuType === 1"
+        v-show="newFormInline.menuType === 3 && !newFormInline.isButton"
         :value="12"
         :xs="24"
         :sm="24"
@@ -246,7 +259,12 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-      <re-col v-if="newFormInline.menuType === 1" :value="12" :xs="24" :sm="24">
+      <re-col
+        v-if="newFormInline.menuType === 3 && !newFormInline.isButton"
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
         <el-form-item label="加载动画">
           <Segmented
             :modelValue="newFormInline.frameLoading ? 0 : 1"
@@ -260,12 +278,7 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col
-        v-show="newFormInline.menuType !== 3"
-        :value="12"
-        :xs="24"
-        :sm="24"
-      >
+      <re-col v-show="!newFormInline.isButton" :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单">
           <Segmented
             :modelValue="newFormInline.showLink ? 0 : 1"
@@ -278,12 +291,7 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-      <re-col
-        v-show="newFormInline.menuType !== 3"
-        :value="12"
-        :xs="24"
-        :sm="24"
-      >
+      <re-col v-show="!newFormInline.isButton" :value="12" :xs="24" :sm="24">
         <el-form-item label="父级菜单">
           <Segmented
             :modelValue="newFormInline.showParent ? 0 : 1"
@@ -297,7 +305,15 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col v-show="newFormInline.menuType < 2" :value="12" :xs="24" :sm="24">
+      <re-col
+        v-show="
+          (newFormInline.menuType === 1 || newFormInline.menuType === 2) &&
+          !newFormInline.isButton
+        "
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
         <el-form-item label="缓存页面">
           <Segmented
             :modelValue="newFormInline.keepAlive ? 0 : 1"
@@ -311,7 +327,15 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col v-show="newFormInline.menuType < 2" :value="12" :xs="24" :sm="24">
+      <re-col
+        v-show="
+          (newFormInline.menuType === 1 || newFormInline.menuType === 2) &&
+          !newFormInline.isButton
+        "
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
         <el-form-item label="标签页">
           <Segmented
             :modelValue="newFormInline.hiddenTag ? 1 : 0"
@@ -324,7 +348,15 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-      <re-col v-show="newFormInline.menuType < 2" :value="12" :xs="24" :sm="24">
+      <re-col
+        v-show="
+          (newFormInline.menuType === 1 || newFormInline.menuType === 2) &&
+          !newFormInline.isButton
+        "
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
         <el-form-item label="固定标签页">
           <Segmented
             :modelValue="newFormInline.fixedTag ? 0 : 1"
