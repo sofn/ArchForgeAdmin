@@ -22,7 +22,8 @@ const home = 0, // 平台规定只有 home 路由的 rank 才能为 0 ，所以�
   board = 23,
   ppt = 24,
   mind = 25,
-  guide = 26;
+  guide = 26,
+  blog = 28;
 
 export {
   home,
@@ -47,5 +48,6 @@ export {
   board,
   ppt,
   mind,
-  guide
+  guide,
+  blog
 };
