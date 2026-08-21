@@ -66,6 +66,15 @@ export function useMetaData(
         formatter: (row: any) => getDictLabel(c.dictCode, row[c.columnCode])
       };
     }
+    if (c.dataType === "REFERENCE") {
+      return {
+        label: c.columnName,
+        prop: c.columnCode,
+        minWidth: 140,
+        formatter: (row: any) =>
+          row[`${c.columnCode}_display`] ?? row[c.columnCode]
+      };
+    }
     return {
       label: c.columnName,
       prop: c.columnCode,

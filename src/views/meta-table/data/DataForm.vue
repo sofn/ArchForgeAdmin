@@ -33,7 +33,7 @@ const visibleColumns = computed(() =>
 );
 
 const textTypes = ["STRING", "TEXT", "UUID"];
-const numberTypes = ["INTEGER", "DECIMAL"];
+const numberTypes = ["INTEGER", "DECIMAL", "REFERENCE"];
 const fileTypes = ["FILE", "IMAGE"];
 
 const uploadUrl = "/api/file/upload";

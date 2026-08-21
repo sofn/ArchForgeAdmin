@@ -137,7 +137,9 @@ const {
             class="w-45!"
           />
           <el-input-number
-            v-else-if="['INTEGER', 'DECIMAL'].includes(col.dataType)"
+            v-else-if="
+              ['INTEGER', 'DECIMAL', 'REFERENCE'].includes(col.dataType)
+            "
             v-model="filters[col.columnCode]"
             :precision="col.dataType === 'DECIMAL' ? col.scale || 2 : 0"
             :placeholder="`请输入${col.columnName}`"

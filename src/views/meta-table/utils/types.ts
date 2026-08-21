@@ -24,6 +24,9 @@ export interface MetaColumn {
   options?: OptionItem[];
   dictCode?: string;
   arrayElementType?: string;
+  referenceTable?: string;
+  referenceColumn?: string;
+  displayExpression?: string;
   searchType?: string;
 }
 

@@ -45,7 +45,8 @@ const dataTypeOptions = [
   { label: "地理位置", value: "GEO" },
   { label: "文件", value: "FILE" },
   { label: "图片", value: "IMAGE" },
-  { label: "多图片", value: "MULTI_IMAGE" }
+  { label: "多图片", value: "MULTI_IMAGE" },
+  { label: "关联", value: "REFERENCE" }
 ];
 
 function getRef() {
@@ -82,6 +83,9 @@ function openFieldDialog(field?: MetaColumn, index?: number) {
           options: [],
           dictCode: undefined,
           arrayElementType: undefined,
+          referenceTable: undefined,
+          referenceColumn: "id",
+          displayExpression: undefined,
           searchType: "LIKE"
         }
       )
@@ -214,6 +218,15 @@ defineExpose({ getRef, getForm });
       <el-table-column label="字典编码" width="140">
         <template #default="{ row }">
           {{ row.dataType === "ENUM" ? (row.dictCode ?? "-") : "-" }}
+        </template>
+      </el-table-column>
+      <el-table-column label="关联信息" min-width="180">
+        <template #default="{ row }">
+          {{
+            row.dataType === "REFERENCE"
+              ? `${row.referenceTable || "-"}.${row.referenceColumn || "id"}`
+              : "-"
+          }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="120" fixed="right">
