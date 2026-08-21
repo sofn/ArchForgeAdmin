@@ -2,11 +2,11 @@ import "./reset.css";
 import dayjs from "dayjs";
 import roleForm from "../form/role.vue";
 import editForm from "../form/index.vue";
-import { zxcvbn } from "@zxcvbn-ts/core";
 import { handleTree } from "@/utils/tree";
 import { message } from "@/utils/message";
 import userAvatar from "@/assets/user.jpg";
 import { usePublicHooks } from "../../hooks";
+import { ZxcvbnFactory } from "@zxcvbn-ts/core";
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import ReCropperPreview from "@/components/ReCropperPreview";
@@ -190,6 +190,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   // 当前密码强度（0-4）
   const curScore = ref();
   const roleOptions = ref([]);
+  const zxcvbnFactory = new ZxcvbnFactory();
 
   function onChange({ row, index }) {
     ElMessageBox.confirm(
@@ -392,7 +393,9 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   watch(
     pwdForm,
     ({ newPwd }) =>
-      (curScore.value = isAllEmpty(newPwd) ? -1 : zxcvbn(newPwd).score)
+      (curScore.value = isAllEmpty(newPwd)
+        ? -1
+        : zxcvbnFactory.check(newPwd).score)
   );
 
   /** 重置密码 */
