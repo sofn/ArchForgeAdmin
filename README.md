@@ -33,6 +33,44 @@ archforge/
 
 Do not point this app at `server-web` :8081. The C-end client is `ArchForgeWeb`.
 
+## Architecture
+
+```mermaid
+flowchart LR
+  U(["B-end operators"]) --> B["Browser<br/>Vue 3 + Element Plus"]
+  subgraph admin["ArchForgeAdmin — this repo :8848"]
+    VIEWS["views/* pages<br/>system · monitor · meta-table"]
+    HTTP["utils/http — axios PureHttp<br/>ApiResponse<T> · token refresh queue"]
+  end
+  SA["server-admin :8080<br/>sa-token · {code,message,data}"]
+  SPEC["ArchForgeSpec<br/>openapi.yaml · enums.yaml"]
+
+  B --> VIEWS --> HTTP -->|"/api (vite proxy)"| SA
+  SPEC -.|"gen:api → schema.d.ts"| HTTP
+  SPEC -.|"enums.generated.ts"| VIEWS
+```
+
+## Contract-first types & tests
+
+API and enum types are **generated, never hand-written**:
+
+```bash
+pnpm gen:api   # src/types/schema.d.ts from ../ArchForgeSpec/api/openapi.yaml
+```
+
+- `src/types/schema.d.ts` — request/response shapes from the OpenAPI contract
+- `src/types/enums.generated.ts` — shared enums + labels from `enums.yaml`
+- `src/utils/http/types.d.ts` — unified `ApiResponse<T>` envelope; every api module reuses it instead of re-declaring `{code,message,data}`
+- CI regenerates both files and fails on drift (`sdk-sync`)
+
+Frontend tests run on **vitest + happy-dom + MSW**:
+
+```bash
+pnpm test   # menuType utils, v-perms directive, httpClient error mapping
+```
+
+Test data comes from `src/test/factories/userFactory.ts` — valid-by-default payloads, override only what you assert on.
+
 ## Quick start
 
 ```bash

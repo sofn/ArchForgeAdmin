@@ -33,6 +33,44 @@ archforge/
 
 不要把本仓库指到 `server-web` :8081。C 端在 `ArchForgeWeb`。
 
+## 架构
+
+```mermaid
+flowchart LR
+  U(["B 端运营人员"]) --> B["浏览器<br/>Vue 3 + Element Plus"]
+  subgraph admin["ArchForgeAdmin —— 本仓库 :8848"]
+    VIEWS["views/* 页面<br/>system · monitor · meta-table"]
+    HTTP["utils/http —— axios PureHttp<br/>ApiResponse<T> · token 刷新队列"]
+  end
+  SA["server-admin :8080<br/>sa-token · {code,message,data}"]
+  SPEC["ArchForgeSpec<br/>openapi.yaml · enums.yaml"]
+
+  B --> VIEWS --> HTTP -->|"/api（vite 代理）"| SA
+  SPEC -.|"gen:api → schema.d.ts"| HTTP
+  SPEC -.|"enums.generated.ts"| VIEWS
+```
+
+## 契约先行：生成类型与测试
+
+API 与枚举类型**全部生成，不手写**：
+
+```bash
+pnpm gen:api   # src/types/schema.d.ts，来自 ../ArchForgeSpec/api/openapi.yaml
+```
+
+- `src/types/schema.d.ts` —— OpenAPI 契约中的请求/响应结构
+- `src/types/enums.generated.ts` —— 共享枚举与文案（enums.yaml）
+- `src/utils/http/types.d.ts` —— 统一 `ApiResponse<T>` envelope；所有 api 模块复用它，不再重复声明 `{code,message,data}`
+- CI 重新生成两个文件并校验漂移（`sdk-sync`）
+
+前端测试跑在 **vitest + happy-dom + MSW** 上：
+
+```bash
+pnpm test   # menuType 工具、v-perms 指令、httpClient 错误映射
+```
+
+测试数据来自 `src/test/factories/userFactory.ts` —— 默认值即可用的载荷，只覆盖断言需要的字段。
+
 ## 快速开始
 
 ```bash
