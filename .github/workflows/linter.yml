@@ -11,14 +11,28 @@ jobs:
   build:
     name: Lint Code
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ArchForgeAdmin
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          path: ArchForgeAdmin
+
+      # gen:api resolves ../ArchForgeSpec from the repo root — keep the two repos side by side.
+      - name: Checkout ArchForgeSpec (contract source)
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/ArchForgeSpec
+          path: ArchForgeSpec
 
       - name: Install Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24
+          cache: pnpm
+          cache-dependency-path: ArchForgeAdmin/pnpm-lock.yaml
 
       - uses: pnpm/action-setup@v6
         name: Install pnpm
@@ -39,6 +53,18 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+
+      - name: SDK sync check (generated types must match the contract)
+        run: |
+          pnpm gen:api
+          git diff --exit-code src/types/schema.d.ts \
+            || (echo "::error::schema.d.ts is out of sync with ArchForgeSpec/api/openapi.yaml — run pnpm gen:api and commit" && exit 1)
+          (cd ../ArchForgeSpec && npm ci --silent && node scripts/gen-enums.mjs)
+          git diff --exit-code src/types/enums.generated.ts \
+            || (echo "::error::enums.generated.ts is out of sync with ArchForgeSpec/enums/enums.yaml" && exit 1)
+
+      - name: Test
+        run: pnpm test
 
       - name: Start Lint Code
         run: |
