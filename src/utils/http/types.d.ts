@@ -9,6 +9,25 @@ export type resultType = {
   accessToken?: string;
 };
 
+/**
+ * Unified backend success envelope: `{code, message, data}`.
+ * `code === 0` means success. Use `ApiResponse<Payload>` instead of
+ * re-declaring `{code, message, data}` in every api module.
+ */
+export interface ApiResponse<T = any> {
+  code: number;
+  message?: string;
+  data: T;
+}
+
+/** Paginated payload shape used inside `ApiResponse`. */
+export interface PageData<T = any> {
+  list: T[];
+  total?: number;
+  pageSize?: number;
+  currentPage?: number;
+}
+
 export type RequestMethods = Extract<
   Method,
   "get" | "post" | "put" | "delete" | "patch" | "option" | "head"

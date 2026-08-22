@@ -1,40 +1,33 @@
 import { http } from "@/utils/http";
+import type { ApiResponse, PageData } from "@/utils/http/types.d";
 
-export type UserResult = {
-  code: number;
-  message: string;
-  data: {
-    /** 头像 */
-    avatar: string;
-    /** 用户名 */
-    username: string;
-    /** 昵称 */
-    nickname: string;
-    /** 当前登录用户的角色 */
-    roles: Array<string>;
-    /** 按钮级别权限 */
-    permissions: Array<string>;
-    /** `token` */
-    accessToken: string;
-    /** 用于调用刷新`accessToken`的接口时所需的`token` */
-    refreshToken: string;
-    /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
-    expires: Date;
-  };
-};
+export type UserResult = ApiResponse<{
+  /** 头像 */
+  avatar: string;
+  /** 用户名 */
+  username: string;
+  /** 昵称 */
+  nickname: string;
+  /** 当前登录用户的角色 */
+  roles: Array<string>;
+  /** 按钮级别权限 */
+  permissions: Array<string>;
+  /** `token` */
+  accessToken: string;
+  /** 用于调用刷新`accessToken`的接口时所需的`token` */
+  refreshToken: string;
+  /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
+  expires: Date;
+}>;
 
-export type RefreshTokenResult = {
-  code: number;
-  message: string;
-  data: {
-    /** `token` */
-    accessToken: string;
-    /** 用于调用刷新`accessToken`的接口时所需的`token` */
-    refreshToken: string;
-    /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
-    expires: Date;
-  };
-};
+export type RefreshTokenResult = ApiResponse<{
+  /** `token` */
+  accessToken: string;
+  /** 用于调用刷新`accessToken`的接口时所需的`token` */
+  refreshToken: string;
+  /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
+  expires: Date;
+}>;
 
 export type UserInfo = {
   /** 头像 */
@@ -51,48 +44,23 @@ export type UserInfo = {
   description: string;
 };
 
-export type UserInfoResult = {
-  code: number;
-  message: string;
-  data: UserInfo;
-};
+export type UserInfoResult = ApiResponse<UserInfo>;
 
-type ResultTable = {
-  code: number;
-  message: string;
-  data?: {
-    /** 列表数据 */
-    list: Array<any>;
-    /** 总条目数 */
-    total?: number;
-    /** 每页显示条目个数 */
-    pageSize?: number;
-    /** 当前页数 */
-    currentPage?: number;
-  };
-};
+type ResultTable = ApiResponse<PageData>;
 
-export type CaptchaResult = {
-  code: number;
-  message: string;
-  data: {
-    /** 是否开启验证码 */
-    isCaptchaOn: boolean;
-    /** 验证码唯一标识 */
-    captchaCodeKey: string;
-    /** 验证码图片 base64 */
-    captchaCodeImg: string;
-  };
-};
+export type CaptchaResult = ApiResponse<{
+  /** 是否开启验证码 */
+  isCaptchaOn: boolean;
+  /** 验证码唯一标识 */
+  captchaCodeKey: string;
+  /** 验证码图片 base64 */
+  captchaCodeImg: string;
+}>;
 
-export type LoginConfigResult = {
-  code: number;
-  message: string;
-  data: {
-    /** 是否开启验证码 */
-    isCaptchaOn: boolean;
-  };
-};
+export type LoginConfigResult = ApiResponse<{
+  /** 是否开启验证码 */
+  isCaptchaOn: boolean;
+}>;
 
 /** 登录 */
 export const getLogin = (data?: object) => {

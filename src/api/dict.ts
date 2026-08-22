@@ -1,4 +1,5 @@
 import { http } from "@/utils/http";
+import type { ApiResponse } from "@/utils/http/types.d";
 
 export type DictType = {
   id: number;
@@ -22,16 +23,12 @@ export type DictTypeDetail = DictType & {
   items?: DictItem[];
 };
 
-export type DictTypePageResult = {
-  code: number;
-  message: string;
-  data: {
-    list: DictType[];
-    total: number;
-    pageSize: number;
-    currentPage: number;
-  };
-};
+export type DictTypePageResult = ApiResponse<{
+  list: DictType[];
+  total: number;
+  pageSize: number;
+  currentPage: number;
+}>;
 
 export const getDictTypePage = (data: {
   currentPage?: number;
