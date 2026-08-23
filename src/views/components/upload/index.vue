@@ -143,7 +143,7 @@ const onDownload = () => {
       class="pure-upload"
       list-type="picture-card"
       accept="image/jpeg,image/png,image/gif"
-      action="https://pureadmin.free.beeceptor.com/images"
+      action="/api/file/upload"
       :limit="3"
       :headers="{ Authorization: 'eyJhbGciOiJIUzUxMiJ9.admin' }"
       :on-exceed="onExceed"
@@ -264,16 +264,9 @@ const onDownload = () => {
         表格操作栏中的上传头像功能
       </p>
       <p class="text-[red] text-[12px] flex flex-auto items-center justify-end">
-        免责声明：上传接口使用
-        <el-link
-          href="https://beeceptor.com/"
-          target="_blank"
-          style="font-size: 16px; font-weight: 800"
-        >
-          &nbsp;Beeceptor&nbsp;
-        </el-link>
-        <span class="font-bold text-[18x]"> 请不要上传重要信息 </span
-        >，如果造成任何损失，我们概不负责
+        免责声明：上传接口使用项目自身接口
+        <span class="font-bold">&nbsp;/api/file/upload&nbsp;</span>
+        ，请不要上传重要信息
       </p>
     </div>
   </el-card>

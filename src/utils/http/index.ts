@@ -39,7 +39,11 @@ class PureHttp {
   }
 
   /** `token`过期后，暂存待执行的请求 */
-  private static requests = [];
+  private static requests: Array<{
+    config: PureHttpRequestConfig;
+    resolve: (value: PureHttpRequestConfig) => void;
+    reject: (reason?: unknown) => void;
+  }> = [];
 
   /** 防止重复刷新`token` */
   private static isRefreshing = false;
@@ -52,12 +56,36 @@ class PureHttp {
 
   /** 重连原始请求 */
   private static retryOriginalRequest(config: PureHttpRequestConfig) {
-    return new Promise(resolve => {
-      PureHttp.requests.push((token: string) => {
-        config.headers["Authorization"] = formatToken(token);
-        resolve(config);
-      });
+    return new Promise<PureHttpRequestConfig>((resolve, reject) => {
+      PureHttp.requests.push({ config, resolve, reject });
     });
+  }
+
+  /** 刷新`token`，成功后放行所有排队的请求，失败则全部以错误拒绝（同一时刻仅允许一次刷新） */
+  private static doRefreshToken(): void {
+    const data = getToken();
+    PureHttp.isRefreshing = true;
+    useUserStoreHook()
+      .handRefreshToken({ refreshToken: data.refreshToken })
+      .then(res => {
+        const token = res.data.accessToken;
+        PureHttp.requests.forEach(({ config, resolve }) => {
+          config.headers["Authorization"] = formatToken(token);
+          resolve(config);
+        });
+        PureHttp.requests = [];
+      })
+      .catch(error => {
+        PureHttp.requests.forEach(({ reject }) => reject(error));
+        PureHttp.requests = [];
+        useUserStoreHook().logOut();
+        message(transformI18n($t("login.pureLoginExpired")), {
+          type: "warning"
+        });
+      })
+      .finally(() => {
+        PureHttp.isRefreshing = false;
+      });
   }
 
   /** 请求拦截 */
@@ -96,26 +124,8 @@ class PureHttp {
                 const expired = parseInt(data.expires) - now <= 0;
                 if (expired) {
                   if (!PureHttp.isRefreshing) {
-                    PureHttp.isRefreshing = true;
                     // token过期刷新
-                    useUserStoreHook()
-                      .handRefreshToken({ refreshToken: data.refreshToken })
-                      .then(res => {
-                        const token = res.data.accessToken;
-                        config.headers["Authorization"] = formatToken(token);
-                        PureHttp.requests.forEach(cb => cb(token));
-                        PureHttp.requests = [];
-                      })
-                      .catch(_err => {
-                        PureHttp.requests = [];
-                        useUserStoreHook().logOut();
-                        message(transformI18n($t("login.pureLoginExpired")), {
-                          type: "warning"
-                        });
-                      })
-                      .finally(() => {
-                        PureHttp.isRefreshing = false;
-                      });
+                    PureHttp.doRefreshToken();
                   }
                   resolve(PureHttp.retryOriginalRequest(config));
                 } else {

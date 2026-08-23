@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formUpload } from "@/api/mock";
+import { uploadFile } from "@/api/file";
 import { message } from "@/utils/message";
 import { onMounted, reactive, ref } from "vue";
 import { type UserInfo, getMine } from "@/api/user";
@@ -70,9 +70,9 @@ const onCropper = ({ blob }) => (cropperBlob.value = blob);
 
 const handleSubmitImage = () => {
   const formData = createFormData({
-    files: new File([cropperBlob.value], "avatar")
+    file: new File([cropperBlob.value], "avatar.png")
   });
-  formUpload(formData)
+  uploadFile(formData)
     .then(({ code }) => {
       if (code === 0) {
         message("更新头像成功", { type: "success" });

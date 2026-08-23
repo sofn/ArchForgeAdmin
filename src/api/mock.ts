@@ -15,7 +15,7 @@ export const mapJson = (params?: object) => {
 export const formUpload = data => {
   return http.request<Result>(
     "post",
-    "https://pureadmin.free.beeceptor.com/images",
+    "/file/upload",
     { data },
     {
       headers: {

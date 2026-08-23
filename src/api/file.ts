@@ -22,6 +22,14 @@ export const getFileList = (data?: object) => {
   return http.request<ResultPage>("get", "/file", { params: data });
 };
 
+/** 上传文件 */
+export const uploadFile = (data: FormData) => {
+  return http.request<Result>("post", "/file/upload", {
+    data,
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+};
+
 /** 删除文件 */
 export const deleteFile = (data?: { id: number }) => {
   return http.request<Result>("delete", `/file/${data?.id}`);
