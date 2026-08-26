@@ -9,6 +9,7 @@ import {
   getMetaTableDetail
 } from "@/api/metaTable";
 import { message } from "@/utils/message";
+import { assertOk, EnvelopeError } from "@/utils/http/envelope";
 import { cloneDeep } from "lodash-es";
 import type { MetaColumn, MetaTable } from "../utils/types";
 
@@ -71,15 +72,16 @@ async function handleSave() {
           if (!ok) return;
           force = true;
         }
-        await updateMetaTable(id.value, { ...curData, force });
+        await assertOk(updateMetaTable(id.value, { ...curData, force }));
         message(`已修改元表格"${curData.tableName}"`, { type: "success" });
       } else {
-        await createMetaTable(curData);
+        await assertOk(createMetaTable(curData));
         message(`已新增元表格"${curData.tableName}"`, { type: "success" });
       }
       closeTabAndBack();
     } catch (e) {
-      // request failed, message already shown by http interceptor
+      // HTTP errors are toasted by the http interceptor; envelope failures here
+      if (e instanceof EnvelopeError) message(e.message, { type: "error" });
     }
   });
 }

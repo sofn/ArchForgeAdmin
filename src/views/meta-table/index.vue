@@ -4,6 +4,7 @@ import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { generateMetaTableCode } from "@/api/metaTable";
 import { message } from "@/utils/message";
+import { assertOk, EnvelopeError } from "@/utils/http/envelope";
 import { ElMessageBox } from "element-plus";
 import { ref } from "vue";
 
@@ -44,15 +45,21 @@ const handleGenerate = async (row: any) => {
       "生成代码",
       { confirmButtonText: "确认", cancelButtonText: "取消", type: "warning" }
     );
-    const { code, data } = await generateMetaTableCode(row.id);
-    if (code === 0) {
-      message(
-        `代码生成成功：后端 ${data.backendDir}，前端 ${data.frontendDir}，文件数 ${data.files}`,
-        { type: "success" }
-      );
-    }
+    const { data } = await assertOk(
+      generateMetaTableCode(row.id, {
+        backendDir: `ArchForge/example/${row.tableCode}`,
+        frontendDir: `ArchForgeAdmin/src/views/${row.tableCode}`,
+        overwrite: false
+      })
+    );
+    message(
+      `代码生成成功：后端 ${data.backendDir}，前端 ${data.frontendDir}，共 ${data.files} 个文件`,
+      { type: "success" }
+    );
   } catch (e) {
-    // 取消或失败
+    // HTTP errors are toasted by the http interceptor; envelope failures and
+    // ElMessageBox cancel land here — only envelope failures carry feedback
+    if (e instanceof EnvelopeError) message(e.message, { type: "error" });
   }
 };
 </script>
@@ -91,7 +98,7 @@ const handleGenerate = async (row: any) => {
     <PureTableBar title="元表格" :columns="columns" @refresh="onSearch">
       <template #buttons>
         <el-button
-          v-perms="['meta:table:add']"
+          v-perms="['meta-table:add']"
           type="primary"
           :icon="useRenderIcon(AddFill)"
           @click="openTableTab()"
@@ -120,7 +127,7 @@ const handleGenerate = async (row: any) => {
         >
           <template #operation="{ row }">
             <el-button
-              v-if="hasPerms(['meta:table:edit'])"
+              v-if="hasPerms(['meta-table:edit'])"
               class="reset-margin"
               link
               type="primary"
@@ -131,7 +138,7 @@ const handleGenerate = async (row: any) => {
               修改
             </el-button>
             <el-button
-              v-if="hasPerms(['meta:table:edit'])"
+              v-if="hasPerms(['meta-table:edit'])"
               class="reset-margin"
               link
               type="primary"
@@ -142,7 +149,7 @@ const handleGenerate = async (row: any) => {
               复制
             </el-button>
             <el-button
-              v-if="hasPerms(['meta:table:data'])"
+              v-if="hasPerms(['meta-table:data'])"
               class="reset-margin"
               link
               type="primary"
@@ -153,7 +160,7 @@ const handleGenerate = async (row: any) => {
               数据
             </el-button>
             <el-button
-              v-if="hasPerms(['meta:table:generate'])"
+              v-if="hasPerms(['meta-table:generate'])"
               class="reset-margin"
               link
               type="primary"
@@ -164,7 +171,7 @@ const handleGenerate = async (row: any) => {
               生成代码
             </el-button>
             <el-popconfirm
-              v-if="hasPerms(['meta:table:remove'])"
+              v-if="hasPerms(['meta-table:remove'])"
               :title="`是否确认删除表格 ${row.tableName}`"
               @confirm="handleDelete(row)"
             >

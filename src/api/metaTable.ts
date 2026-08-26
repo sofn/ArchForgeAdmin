@@ -108,7 +108,20 @@ export const importMetaData = (id: number, file: File, format = "CSV") => {
   );
 };
 
+export interface MetaTableGenerateRequest {
+  /** 相对代码生成工作区根目录，默认 `ArchForge/example/<tableCode>` */
+  backendDir?: string;
+  /** 相对代码生成工作区根目录，默认 `ArchForgeAdmin/src/views/<tableCode>` */
+  frontendDir?: string;
+  /** 接口基础路径，默认 `/generated/<tableCode>` */
+  basePath?: string;
+  overwrite?: boolean;
+}
+
 /** 生成元表格代码 */
-export const generateMetaTableCode = (id: number, data?: object) => {
+export const generateMetaTableCode = (
+  id: number,
+  data: MetaTableGenerateRequest = {}
+) => {
   return http.request<Result>("post", `/meta-table/${id}/generate`, { data });
 };

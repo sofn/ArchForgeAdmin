@@ -32,6 +32,22 @@ const defaultConfig: AxiosRequestConfig = {
   }
 };
 
+let lastErrorToast = { text: "", at: 0 };
+
+function toastHttpError(error: PureHttpError) {
+  const data = error.response?.data as Record<string, unknown> | undefined;
+  const text =
+    (data && typeof data === "object"
+      ? ((data.detail ?? data.message) as string | undefined)
+      : undefined) ??
+    error.message ??
+    "请求失败";
+  const now = Date.now();
+  if (text === lastErrorToast.text && now - lastErrorToast.at < 1000) return;
+  lastErrorToast = { text, at: now };
+  message(text, { type: "error" });
+}
+
 class PureHttp {
   constructor() {
     this.httpInterceptorsRequest();
@@ -165,6 +181,9 @@ class PureHttp {
       (error: PureHttpError) => {
         const $error = error;
         $error.isCancelRequest = Axios.isCancel($error);
+        if (!$error.isCancelRequest) {
+          toastHttpError($error);
+        }
         // 所有的响应异常 区分来源为取消请求/非取消请求
         return Promise.reject($error);
       }

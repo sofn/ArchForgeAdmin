@@ -59,11 +59,54 @@ watch(() => props.columns, loadColumnDicts, { deep: true });
 function getData() {
   const result = { ...newFormInline.value };
   visibleColumns.value.forEach(column => {
-    if (column.dataType === "GEO" && result[column.columnCode]) {
-      result[column.columnCode] = JSON.stringify(result[column.columnCode]);
+    if (column.dataType === "GEO") {
+      const value = result[column.columnCode] as
+        { lat?: number | null; lng?: number | null } | string | undefined;
+      const isEmpty =
+        !value ||
+        (typeof value === "object" && value.lat == null && value.lng == null);
+      if (isEmpty) {
+        delete result[column.columnCode];
+      } else if (typeof value !== "string") {
+        result[column.columnCode] = JSON.stringify(value);
+      }
     }
   });
   return result;
+}
+
+function geoRules(column: MetaColumn) {
+  if (column.dataType !== "GEO") return undefined;
+  return [
+    {
+      trigger: "change",
+      validator: (
+        _rule: unknown,
+        _value: unknown,
+        callback: (error?: Error) => void
+      ) => {
+        const value = newFormInline.value[column.columnCode] as
+          { lat?: number | null; lng?: number | null } | string | undefined;
+        const isEmpty =
+          !value ||
+          (typeof value === "object" && value.lat == null && value.lng == null);
+        if (isEmpty) {
+          if (column.required) {
+            return callback(new Error(`请输入${column.columnName}`));
+          }
+          return callback();
+        }
+        if (
+          typeof value === "object" &&
+          ((value.lat == null && value.lng != null) ||
+            (value.lat != null && value.lng == null))
+        ) {
+          return callback(new Error("纬度和经度需同时填写"));
+        }
+        callback();
+      }
+    }
+  ];
 }
 
 function fileListFor(column: MetaColumn) {
@@ -164,7 +207,8 @@ defineExpose({ getRef, getData });
       :key="column.columnCode"
       :label="column.columnName"
       :prop="column.columnCode"
-      :required="column.required"
+      :required="column.dataType !== 'GEO' && column.required"
+      :rules="geoRules(column)"
     >
       <el-upload
         v-if="fileTypes.includes(column.dataType)"

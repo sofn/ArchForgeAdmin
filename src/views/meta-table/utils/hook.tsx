@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import DataManage from "../data/index.vue";
 import { message } from "@/utils/message";
+import { assertOk, EnvelopeError } from "@/utils/http/envelope";
 import { hasPerms } from "@/utils/auth";
 import {
   getMetaTableList,
@@ -150,31 +151,37 @@ export function useMetaTable() {
   }
 
   async function handleCopy(row: MetaTable) {
-    const { code, data } = await copyMetaTable(row.id);
-    if (code === 0) {
+    try {
+      const { data } = await assertOk(copyMetaTable(row.id));
       message(`已复制元表格"${row.tableName}"，新表格ID：${data}`, {
         type: "success"
       });
       await onSearch();
+    } catch (e) {
+      if (e instanceof EnvelopeError) message(e.message, { type: "error" });
     }
   }
 
   async function handleDelete(row: MetaTable) {
-    const { code, data } = await checkDeleteMetaTable(row.id);
-    if (code === 0 && data > 0) {
-      if (
-        !confirm(
-          `该表格中仍存在 ${data} 条数据，强制删除将不可恢复，是否继续？`
-        )
-      ) {
-        return;
+    try {
+      const { data } = await assertOk(checkDeleteMetaTable(row.id));
+      if (data > 0) {
+        if (
+          !confirm(
+            `该表格中仍存在 ${data} 条数据，强制删除将不可恢复，是否继续？`
+          )
+        ) {
+          return;
+        }
+        await assertOk(deleteMetaTable(row.id, true));
+      } else {
+        await assertOk(deleteMetaTable(row.id, false));
       }
-      await deleteMetaTable(row.id, true);
-    } else {
-      await deleteMetaTable(row.id, false);
+      message(`您删除了元表格"${row.tableName}"`, { type: "success" });
+      onSearch();
+    } catch (e) {
+      if (e instanceof EnvelopeError) message(e.message, { type: "error" });
     }
-    message(`您删除了元表格"${row.tableName}"`, { type: "success" });
-    onSearch();
   }
 
   async function openDataDialog(row: MetaTable) {

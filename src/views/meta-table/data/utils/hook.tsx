@@ -1,5 +1,6 @@
 import DataForm from "../DataForm.vue";
 import { message } from "@/utils/message";
+import { assertOk, EnvelopeError } from "@/utils/http/envelope";
 import {
   getMetaDataList,
   createMetaData,
@@ -160,16 +161,21 @@ export function useMetaData(
         const FormRef = formRef.value.getRef();
         const curData = formRef.value.getData() as Record<string, any>;
         FormRef.validate(async valid => {
-          if (valid) {
+          if (!valid) return;
+          try {
             if (title === "新增") {
-              await createMetaData(tableId, curData);
+              await assertOk(createMetaData(tableId, curData));
               message("数据新增成功", { type: "success" });
             } else {
-              await updateMetaData(tableId, row.id, curData);
+              await assertOk(updateMetaData(tableId, row.id, curData));
               message("数据修改成功", { type: "success" });
             }
             done();
             onSearch();
+          } catch (e) {
+            // HTTP errors are toasted by the http interceptor; envelope failures here
+            if (e instanceof EnvelopeError)
+              message(e.message, { type: "error" });
           }
         });
       }
@@ -177,9 +183,17 @@ export function useMetaData(
   }
 
   async function handleDeleteData(row: any) {
-    await deleteMetaData(tableId, row.id);
-    message("数据删除成功", { type: "success" });
-    onSearch();
+    try {
+      const { data } = await assertOk(deleteMetaData(tableId, row.id));
+      if (data !== true) {
+        message("数据删除失败", { type: "error" });
+        return;
+      }
+      message("数据删除成功", { type: "success" });
+      onSearch();
+    } catch (e) {
+      if (e instanceof EnvelopeError) message(e.message, { type: "error" });
+    }
   }
 
   const exportFormatOptions = [

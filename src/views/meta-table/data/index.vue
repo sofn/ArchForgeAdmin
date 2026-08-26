@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useMetaData } from "./utils/hook";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
+import { hasPerms } from "@/utils/auth";
 import AddFill from "~icons/ri/add-circle-line";
 import Delete from "~icons/ep/delete";
 import EditPen from "~icons/ep/edit-pen";
@@ -202,13 +203,14 @@ const {
     >
       <template #buttons>
         <el-button
+          v-if="hasPerms(['meta-table:add'])"
           type="primary"
           :icon="useRenderIcon(AddFill)"
           @click="openDataForm()"
         >
           新增数据
         </el-button>
-        <el-button-group class="mr-2">
+        <el-button-group v-if="hasPerms(['meta-table:export'])" class="mr-2">
           <el-select
             v-model="exportFormat"
             class="w-30!"
@@ -228,7 +230,7 @@ const {
             导出
           </el-button>
         </el-button-group>
-        <el-button-group>
+        <el-button-group v-if="hasPerms(['meta-table:add'])">
           <el-select
             v-model="importFormat"
             class="w-30!"
@@ -266,6 +268,7 @@ const {
         >
           <template #operation="{ row }">
             <el-button
+              v-if="hasPerms(['meta-table:edit'])"
               class="reset-margin"
               link
               type="primary"
@@ -276,6 +279,7 @@ const {
               修改
             </el-button>
             <el-popconfirm
+              v-if="hasPerms(['meta-table:remove'])"
               title="是否确认删除该数据"
               @confirm="handleDeleteData(row)"
             >
