@@ -56,7 +56,7 @@ export async function getPluginsList(
       include: "mock",
       infixName: false,
       enableProd: false,
-      enableDev: false
+      enableDev: true
     }),
     // svg组件化支持
     svgLoader(),
