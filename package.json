@@ -24,29 +24,29 @@
     "preinstall": "npx only-allow pnpm"
   },
   "keywords": [
-    "vue-pure-admin",
+    "archforge-admin",
+    "archforge",
     "element-plus",
     "tailwindcss",
-    "pure-admin",
     "typescript",
     "pinia",
     "vue3",
     "vite",
     "esm"
   ],
-  "homepage": "https://github.com/pure-admin/vue-pure-admin",
+  "homepage": "https://github.com/sofn/ArchForgeAdmin#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pure-admin/vue-pure-admin.git"
+    "url": "git+https://github.com/sofn/ArchForgeAdmin.git"
   },
   "bugs": {
-    "url": "https://github.com/pure-admin/vue-pure-admin/issues"
+    "url": "https://github.com/sofn/ArchForgeAdmin/issues"
   },
   "license": "MIT",
   "author": {
-    "name": "xiaoxian521",
-    "email": "pureadmin@163.com",
-    "url": "https://github.com/xiaoxian521"
+    "name": "sofn",
+    "email": "lesofn@gmail.com",
+    "url": "https://github.com/sofn"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
