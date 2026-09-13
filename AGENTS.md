@@ -27,14 +27,14 @@ archforge/
 
 Requires Node.js >= 22 and pnpm >= 9.
 
-| Command | What |
-|---------|------|
-| `pnpm dev` | Vite dev server — **http://localhost:8848** |
-| `pnpm build` | Production build |
-| `pnpm build:staging` | Staging build |
-| `pnpm typecheck` | `vue-tsc --noEmit` |
-| `pnpm lint` | ESLint + Prettier + Stylelint |
-| `pnpm preview` | Preview production build |
+| Command              | What                                        |
+| -------------------- | ------------------------------------------- |
+| `pnpm dev`           | Vite dev server — **http://localhost:8848** |
+| `pnpm build`         | Production build                            |
+| `pnpm build:staging` | Staging build                               |
+| `pnpm typecheck`     | `vue-tsc --noEmit`                          |
+| `pnpm lint`          | ESLint + Prettier + Stylelint               |
+| `pnpm preview`       | Preview production build                    |
 
 ## Directory
 
@@ -75,3 +75,9 @@ New feature: `src/views/<feature>/` + `src/api/<feature>.ts`.
 - Auth failures may be RFC 9457 ProblemDetail (`401` / `403`). That is not the success envelope.
 
 See `CLAUDE.md` for stack details.
+
+## AI assets convention (ArchForge workspace)
+
+- Canonical AI-asset dir lives in `../ArchForge/.agents/` (skills, memory, changes, knowledge). This repo does not duplicate it.
+- Cross-repo plan files for work touching this app go in `../ArchForge/.agents/changes/<name>/`.
+- This repo may adopt the same `.agents/` layout later if per-repo skills/memory accumulate; do not create empty scaffolding.
