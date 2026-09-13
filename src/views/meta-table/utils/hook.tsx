@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import DataManage from "../data/index.vue";
+import ImportTable from "../import/ImportTable.vue";
 import { message } from "@/utils/message";
 import { assertOk, EnvelopeError } from "@/utils/http/envelope";
 import { hasPerms } from "@/utils/auth";
@@ -10,7 +11,7 @@ import {
   checkDeleteMetaTable,
   getMetaTableDetail
 } from "@/api/metaTable";
-import { addDialog } from "@/components/ReDialog";
+import { addDialog, closeDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import { useRouter } from "vue-router";
@@ -208,6 +209,25 @@ export function useMetaTable() {
     });
   }
 
+  function openImportDialog() {
+    addDialog({
+      title: "导入已有数据表",
+      width: "72%",
+      draggable: true,
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      hideFooter: true,
+      contentRenderer: ({ options, index }) =>
+        h(ImportTable, {
+          onClose: () => closeDialog(options, index),
+          onSuccess: () => {
+            closeDialog(options, index);
+            onSearch();
+          }
+        })
+    });
+  }
+
   onMounted(() => {
     onSearch();
   });
@@ -225,6 +245,7 @@ export function useMetaTable() {
     handleCopy,
     handleDelete,
     openDataDialog,
+    openImportDialog,
     handleSizeChange,
     handleCurrentChange
   };

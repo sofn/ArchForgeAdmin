@@ -34,6 +34,7 @@ const {
   handleCopy,
   handleDelete,
   openDataDialog,
+  openImportDialog,
   handleSizeChange,
   handleCurrentChange
 } = useMetaTable();
@@ -104,6 +105,13 @@ const handleGenerate = async (row: any) => {
           @click="openTableTab()"
         >
           新增表格
+        </el-button>
+        <el-button
+          v-perms="['meta-table:add']"
+          :icon="useRenderIcon('ri/database-2-line')"
+          @click="openImportDialog"
+        >
+          导入已有表
         </el-button>
       </template>
       <template v-slot="{ size, dynamicColumns }">
