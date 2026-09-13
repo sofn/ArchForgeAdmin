@@ -15,7 +15,7 @@ export function userFactory(overrides: Partial<UserPayload> = {}): UserPayload {
     username: `admin-${sequence}`,
     nickname: `管理员${sequence}`,
     roles: ["admin"],
-    permissions: ["*:*:*"],
+    permissions: ["*"],
     accessToken: `access-token-${sequence}`,
     refreshToken: `refresh-token-${sequence}`,
     expires: new Date(Date.now() + 3600_000),
