@@ -1,33 +1,10 @@
 import { http } from "@/utils/http";
 import type { ApiResponse, PageData } from "@/utils/http/types.d";
+import type { OpResult } from "@/types/contract";
 
-export type UserResult = ApiResponse<{
-  /** 头像 */
-  avatar: string;
-  /** 用户名 */
-  username: string;
-  /** 昵称 */
-  nickname: string;
-  /** 当前登录用户的角色 */
-  roles: Array<string>;
-  /** 按钮级别权限 */
-  permissions: Array<string>;
-  /** `token` */
-  accessToken: string;
-  /** 用于调用刷新`accessToken`的接口时所需的`token` */
-  refreshToken: string;
-  /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
-  expires: Date;
-}>;
+export type UserResult = OpResult<"/auth/login", "post">;
 
-export type RefreshTokenResult = ApiResponse<{
-  /** `token` */
-  accessToken: string;
-  /** 用于调用刷新`accessToken`的接口时所需的`token` */
-  refreshToken: string;
-  /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
-  expires: Date;
-}>;
+export type RefreshTokenResult = OpResult<"/auth/refresh-token", "post">;
 
 export type UserInfo = {
   /** 头像 */
@@ -48,19 +25,9 @@ export type UserInfoResult = ApiResponse<UserInfo>;
 
 type ResultTable = ApiResponse<PageData>;
 
-export type CaptchaResult = ApiResponse<{
-  /** 是否开启验证码 */
-  isCaptchaOn: boolean;
-  /** 验证码唯一标识 */
-  captchaCodeKey: string;
-  /** 验证码图片 base64 */
-  captchaCodeImg: string;
-}>;
+export type CaptchaResult = OpResult<"/auth/captchaImage", "get">;
 
-export type LoginConfigResult = ApiResponse<{
-  /** 是否开启验证码 */
-  isCaptchaOn: boolean;
-}>;
+export type LoginConfigResult = OpResult<"/auth/getConfig", "get">;
 
 /** 登录 */
 export const getLogin = (data?: object) => {

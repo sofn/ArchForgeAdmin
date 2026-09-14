@@ -18,7 +18,7 @@ export function userFactory(overrides: Partial<UserPayload> = {}): UserPayload {
     permissions: ["*"],
     accessToken: `access-token-${sequence}`,
     refreshToken: `refresh-token-${sequence}`,
-    expires: new Date(Date.now() + 3600_000),
+    expires: new Date(Date.now() + 3600_000).toISOString(),
     ...overrides
   };
 }
