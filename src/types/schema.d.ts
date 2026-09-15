@@ -3682,7 +3682,23 @@ export interface components {
       avatar: string;
     };
   };
-  responses: never;
+  responses: {
+    /** @description Error response (RFC 9457 ProblemDetail) */
+    Error: {
+      headers: {
+        [name: string]: unknown;
+      };
+      content: {
+        "application/json": {
+          type: string;
+          title: string;
+          status: number;
+          detail: string;
+          instance: string;
+        };
+      };
+    };
+  };
   parameters: never;
   requestBodies: never;
   headers: never;
@@ -3710,6 +3726,7 @@ export interface operations {
           };
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   sessions: {
@@ -3732,6 +3749,7 @@ export interface operations {
           }[];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createSession: {
@@ -3754,6 +3772,7 @@ export interface operations {
           };
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   delete_4: {
@@ -3774,6 +3793,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   messages: {
@@ -3798,6 +3818,7 @@ export interface operations {
           }[];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   send: {
@@ -3824,6 +3845,7 @@ export interface operations {
           "text/event-stream": components["schemas"]["SseEmitter"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getConfigList: {
@@ -3848,6 +3870,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseConfigResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createConfig: {
@@ -3872,6 +3895,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteConfig: {
@@ -3896,6 +3920,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateConfig: {
@@ -3920,6 +3945,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   metrics: {
@@ -3940,6 +3966,7 @@ export interface operations {
           "application/json": components["schemas"]["DashboardMetricsResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   recentActivities: {
@@ -3960,6 +3987,7 @@ export interface operations {
           "application/json": components["schemas"]["DashboardActivity"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   todo: {
@@ -3980,6 +4008,7 @@ export interface operations {
           "application/json": components["schemas"]["DashboardTodo"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   trends: {
@@ -4002,6 +4031,7 @@ export interface operations {
           "application/json": components["schemas"]["DashboardTrendPoint"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getDeptList: {
@@ -4022,6 +4052,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminDeptDTO"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createDept: {
@@ -4046,6 +4077,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteDept: {
@@ -4070,6 +4102,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateDept: {
@@ -4094,6 +4127,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getLoginLogsList: {
@@ -4118,6 +4152,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseLoginLogResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   clearLoginLogs: {
@@ -4138,6 +4173,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteLoginLog: {
@@ -4162,6 +4198,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getMenuList: {
@@ -4182,6 +4219,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminMenuDTO"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createMenu: {
@@ -4206,6 +4244,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteMenu: {
@@ -4230,6 +4269,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateMenu: {
@@ -4254,6 +4294,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getNoticeList: {
@@ -4278,6 +4319,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseNoticeResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createNotice: {
@@ -4302,6 +4344,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteNotice: {
@@ -4326,6 +4369,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateNotice: {
@@ -4350,6 +4394,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getOperationLogsList: {
@@ -4374,6 +4419,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseOperationLogResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   clearOperLogs: {
@@ -4394,6 +4440,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteOperLog: {
@@ -4418,6 +4465,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   menuTree: {
@@ -4438,6 +4486,7 @@ export interface operations {
           "application/json": components["schemas"]["PermissionMenuNode"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   rolePermissions: {
@@ -4460,6 +4509,7 @@ export interface operations {
           "application/json": number[];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   saveRolePermissions: {
@@ -4484,6 +4534,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getRoleList: {
@@ -4508,6 +4559,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseAdminRoleDTO"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   listAllRoles: {
@@ -4528,6 +4580,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminRoleSimpleDTO"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createRole: {
@@ -4552,6 +4605,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateRoleDataScope: {
@@ -4576,6 +4630,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteRole: {
@@ -4600,6 +4655,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getRoleMenuTree: {
@@ -4620,6 +4676,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminRoleMenuDTO"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getRoleMenuIds: {
@@ -4644,6 +4701,7 @@ export interface operations {
           "application/json": number[];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   saveRoleMenu: {
@@ -4668,6 +4726,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateRoleStatus: {
@@ -4692,6 +4751,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateRole: {
@@ -4716,6 +4776,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   list_3: {
@@ -4738,6 +4799,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseSchedulerJobResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   add: {
@@ -4762,6 +4824,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   logList: {
@@ -4784,6 +4847,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseSchedulerLogResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   pause: {
@@ -4804,6 +4868,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   resume: {
@@ -4824,6 +4889,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   run: {
@@ -4844,6 +4910,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   update_3: {
@@ -4868,6 +4935,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   validateCron: {
@@ -4892,6 +4960,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   delete_3: {
@@ -4912,6 +4981,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getServerInfo: {
@@ -4932,6 +5002,7 @@ export interface operations {
           "application/json": components["schemas"]["ServerInfoResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getUserList: {
@@ -4956,6 +5027,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseAdminUserDTO"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   assignUserRole: {
@@ -4980,6 +5052,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createUser: {
@@ -5004,6 +5077,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteUser: {
@@ -5028,6 +5102,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   export_1: {
@@ -5046,6 +5121,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   listRoleIds: {
@@ -5070,6 +5146,7 @@ export interface operations {
           "application/json": number[];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   resetUserPassword: {
@@ -5094,6 +5171,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateUserStatus: {
@@ -5118,6 +5196,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateUser: {
@@ -5142,6 +5221,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   index: {
@@ -5162,6 +5242,7 @@ export interface operations {
           "application/json": string;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getCaptchaImg: {
@@ -5182,6 +5263,7 @@ export interface operations {
           "application/json": components["schemas"]["CaptchaResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getAsyncRoutes: {
@@ -5202,6 +5284,7 @@ export interface operations {
           "application/json": components["schemas"]["RouterDTO"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getConfig: {
@@ -5222,6 +5305,7 @@ export interface operations {
           "application/json": components["schemas"]["LoginConfigResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getLoginUserInfo: {
@@ -5242,6 +5326,7 @@ export interface operations {
           "application/json": components["schemas"]["CurrentLoginUserResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getRouters: {
@@ -5262,6 +5347,7 @@ export interface operations {
           "application/json": components["schemas"]["RouterDTO"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   login: {
@@ -5286,6 +5372,7 @@ export interface operations {
           "application/json": components["schemas"]["LoginResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   logout: {
@@ -5310,6 +5397,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   refreshToken: {
@@ -5334,6 +5422,7 @@ export interface operations {
           "application/json": components["schemas"]["RefreshTokenResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   list_2: {
@@ -5358,6 +5447,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseAdminBlogArticleResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   create_2: {
@@ -5382,6 +5472,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   delete_2: {
@@ -5406,6 +5497,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   update_2: {
@@ -5430,6 +5522,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   offline: {
@@ -5452,6 +5545,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   publish: {
@@ -5474,6 +5568,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   list_1: {
@@ -5498,6 +5593,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseAdminBlogCategoryResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   create_1: {
@@ -5522,6 +5618,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   delete_1: {
@@ -5546,6 +5643,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   update_1: {
@@ -5570,6 +5668,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   uploadMarkdownImage: {
@@ -5594,6 +5693,7 @@ export interface operations {
           };
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   listFiles: {
@@ -5616,6 +5716,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseFileResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   downloadFile: {
@@ -5638,6 +5739,7 @@ export interface operations {
           "application/json": string;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   uploadFile: {
@@ -5665,6 +5767,7 @@ export interface operations {
           "application/json": components["schemas"]["UploadFileResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   uploadImage: {
@@ -5692,6 +5795,7 @@ export interface operations {
           "application/json": components["schemas"]["UploadFileResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteFile: {
@@ -5714,6 +5818,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   token: {
@@ -5734,6 +5839,7 @@ export interface operations {
           "application/json": components["schemas"]["ResponseResultString"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   list: {
@@ -5758,6 +5864,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseMetaTableResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   create: {
@@ -5782,6 +5889,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   importTable: {
@@ -5806,6 +5914,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   importPreview: {
@@ -5828,6 +5937,7 @@ export interface operations {
           "application/json": components["schemas"]["TableImportPreview"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   importableTables: {
@@ -5848,6 +5958,7 @@ export interface operations {
           "application/json": components["schemas"]["ImportableTableInfo"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   detail: {
@@ -5870,6 +5981,7 @@ export interface operations {
           "application/json": components["schemas"]["MetaTableResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   update: {
@@ -5896,6 +6008,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   delete: {
@@ -5920,6 +6033,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateMeta: {
@@ -5946,6 +6060,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   copy: {
@@ -5968,6 +6083,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   listData: {
@@ -5994,6 +6110,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseMapStringObject"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createData: {
@@ -6022,6 +6139,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateData: {
@@ -6051,6 +6169,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteData: {
@@ -6074,6 +6193,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteCheck: {
@@ -6096,6 +6216,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   export: {
@@ -6118,6 +6239,7 @@ export interface operations {
         };
         content?: never;
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   exportMigration: {
@@ -6140,6 +6262,7 @@ export interface operations {
           "application/json": string;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   generate: {
@@ -6166,6 +6289,7 @@ export interface operations {
           "application/json": components["schemas"]["MetaTableGenerateResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   importData: {
@@ -6197,6 +6321,7 @@ export interface operations {
           "application/json": components["schemas"]["ImportResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   migrations: {
@@ -6219,6 +6344,7 @@ export interface operations {
           "application/json": components["schemas"]["MetaTableMigration"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   schemaPreview: {
@@ -6245,6 +6371,7 @@ export interface operations {
           "application/json": components["schemas"]["SchemaPreview"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getCacheInfo: {
@@ -6265,6 +6392,7 @@ export interface operations {
           "application/json": components["schemas"]["CacheInfoResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getOnlineLogsList: {
@@ -6289,6 +6417,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseOnlineUserResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateItem: {
@@ -6315,6 +6444,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteItem: {
@@ -6337,6 +6467,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   listTypes: {
@@ -6361,6 +6492,7 @@ export interface operations {
           "application/json": components["schemas"]["AdminPageResponseDictTypeResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createType: {
@@ -6385,6 +6517,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createItem: {
@@ -6411,6 +6544,7 @@ export interface operations {
           "application/json": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getTypeByCode: {
@@ -6433,6 +6567,7 @@ export interface operations {
           "application/json": components["schemas"]["DictTypeResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   updateType: {
@@ -6459,6 +6594,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   deleteType: {
@@ -6481,6 +6617,7 @@ export interface operations {
           "application/json": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getArticles: {
@@ -6506,6 +6643,7 @@ export interface operations {
           "*/*": components["schemas"]["WebPageResponseWebArticleSummaryResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   createArticle: {
@@ -6530,6 +6668,7 @@ export interface operations {
           "*/*": number;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getArticle: {
@@ -6552,6 +6691,7 @@ export interface operations {
           "*/*": components["schemas"]["WebArticleDetailResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   getCategories: {
@@ -6572,6 +6712,7 @@ export interface operations {
           "*/*": components["schemas"]["WebCategoryResponse"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   webMetrics: {
@@ -6592,6 +6733,7 @@ export interface operations {
           "*/*": components["schemas"]["WebDashboardMetricsResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   upload: {
@@ -6619,6 +6761,7 @@ export interface operations {
           "*/*": components["schemas"]["FileUploadResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   download: {
@@ -6641,6 +6784,7 @@ export interface operations {
           "*/*": string;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   forgotPassword: {
@@ -6665,6 +6809,7 @@ export interface operations {
           "*/*": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   webLogin: {
@@ -6689,6 +6834,7 @@ export interface operations {
           "*/*": components["schemas"]["WebLoginResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   webLogout: {
@@ -6713,6 +6859,7 @@ export interface operations {
           "*/*": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   notices: {
@@ -6733,6 +6880,7 @@ export interface operations {
           "*/*": components["schemas"]["WebNoticeResponse"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   operationLogs: {
@@ -6753,6 +6901,7 @@ export interface operations {
           "*/*": components["schemas"]["WebOperationLogResponse"][];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   webRefreshToken: {
@@ -6777,6 +6926,7 @@ export interface operations {
           "*/*": components["schemas"]["WebLoginResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   register: {
@@ -6801,6 +6951,7 @@ export interface operations {
           "*/*": components["schemas"]["WebLoginResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   resetPassword: {
@@ -6825,6 +6976,7 @@ export interface operations {
           "*/*": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   myArticles: {
@@ -6848,6 +7000,7 @@ export interface operations {
           "*/*": components["schemas"]["WebPageResponseWebArticleSummaryResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   changePassword: {
@@ -6872,6 +7025,7 @@ export interface operations {
           "*/*": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   profile: {
@@ -6892,6 +7046,7 @@ export interface operations {
           "*/*": components["schemas"]["WebUserProfileResponse"];
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
   sendVerificationCode: {
@@ -6916,6 +7071,7 @@ export interface operations {
           "*/*": boolean;
         };
       };
+      "4XX": components["responses"]["Error"];
     };
   };
 }
