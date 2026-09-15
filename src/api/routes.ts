@@ -1,11 +1,9 @@
 import { http } from "@/utils/http";
-
-type Result = {
-  code: number;
-  message: string;
-  data: Array<any>;
-};
+import type { OpResult } from "@/types/contract";
 
 export const getAsyncRoutes = () => {
-  return http.request<Result>("get", "/auth/get-async-routes");
+  return http.request<OpResult<"/auth/get-async-routes", "get">>(
+    "get",
+    "/auth/get-async-routes"
+  );
 };

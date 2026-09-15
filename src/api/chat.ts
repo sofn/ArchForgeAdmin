@@ -1,12 +1,9 @@
 import { http } from "@/utils/http";
 import { getToken } from "@/utils/auth";
+import type { ApiResponse } from "@/utils/http/types.d";
 
-type Envelope<T> = {
-  code: number;
-  message: string;
-  data: T;
-};
-
+// Backend chat endpoints return Map<String,Object> — no named schema exists in
+// the contract yet, so these stay hand-written (contract has nothing better).
 export type ChatConfigStatus = {
   provider: string;
   model: string;
@@ -15,13 +12,16 @@ export type ChatConfigStatus = {
 };
 
 export const getChatConfig = () =>
-  http.request<Envelope<ChatConfigStatus>>("get", "/admin/chat/config");
+  http.request<ApiResponse<ChatConfigStatus>>("get", "/admin/chat/config");
 
 export const createChatSession = () =>
-  http.request<Envelope<{ id: string }>>("post", "/admin/chat/sessions");
+  http.request<ApiResponse<{ id: string }>>("post", "/admin/chat/sessions");
 
 export const listChatSessions = () =>
-  http.request<Envelope<Array<{ id: string }>>>("get", "/admin/chat/sessions");
+  http.request<ApiResponse<Array<{ id: string }>>>(
+    "get",
+    "/admin/chat/sessions"
+  );
 
 export async function streamChatMessage(
   sessionId: string,

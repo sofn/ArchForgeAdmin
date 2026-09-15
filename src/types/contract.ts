@@ -24,8 +24,8 @@ type JsonContent<R> = R extends { content: infer C }
     ? D
     : C extends { "*/*": infer D }
       ? D
-      : never
-  : never;
+      : null
+  : null;
 
 /**
  * The success-envelope type of a contract operation, e.g.

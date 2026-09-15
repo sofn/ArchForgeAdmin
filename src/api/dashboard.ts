@@ -1,50 +1,34 @@
 import { http } from "@/utils/http";
+import type { OpResult, Schema } from "@/types/contract";
 
-type Envelope<T> = {
-  code: number;
-  message: string;
-  data: T;
-};
+export type DashboardMetrics = Schema<"DashboardMetricsResponse">;
 
-export type DashboardMetrics = {
-  userCount: number;
-  articleCount: number;
-  metaTableCount: number;
-  taskCount: number;
-};
+export type DashboardTrendPoint = Schema<"DashboardTrendPoint">;
 
-export type DashboardTrendPoint = {
-  date: string;
-  users: number;
-  articles: number;
-};
+export type DashboardActivity = Schema<"DashboardActivity">;
 
-export type DashboardActivity = {
-  type: string;
-  title: string;
-  time: string;
-};
-
-export type DashboardTodo = {
-  title: string;
-  count: number;
-  href: string;
-};
+export type DashboardTodo = Schema<"DashboardTodo">;
 
 export const getDashboardMetrics = () =>
-  http.request<Envelope<DashboardMetrics>>("get", "/admin/dashboard/metrics");
+  http.request<OpResult<"/admin/dashboard/metrics", "get">>(
+    "get",
+    "/admin/dashboard/metrics"
+  );
 
 export const getDashboardTrends = (days = 7) =>
-  http.request<Envelope<DashboardTrendPoint[]>>(
+  http.request<OpResult<"/admin/dashboard/trends", "get">>(
     "get",
     `/admin/dashboard/trends?days=${days}`
   );
 
 export const getDashboardActivities = () =>
-  http.request<Envelope<DashboardActivity[]>>(
+  http.request<OpResult<"/admin/dashboard/recent-activities", "get">>(
     "get",
     "/admin/dashboard/recent-activities"
   );
 
 export const getDashboardTodo = () =>
-  http.request<Envelope<DashboardTodo[]>>("get", "/admin/dashboard/todo");
+  http.request<OpResult<"/admin/dashboard/todo", "get">>(
+    "get",
+    "/admin/dashboard/todo"
+  );

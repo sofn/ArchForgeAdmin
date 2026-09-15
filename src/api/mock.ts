@@ -1,4 +1,5 @@
 import { http } from "@/utils/http";
+import type { OpResult } from "@/types/contract";
 
 type Result = {
   code: number;
@@ -13,7 +14,7 @@ export const mapJson = (params?: object) => {
 
 /** 文件上传 */
 export const formUpload = data => {
-  return http.request<Result>(
+  return http.request<OpResult<"/file/upload", "post">>(
     "post",
     "/file/upload",
     { data },

@@ -1,35 +1,22 @@
 import { http } from "@/utils/http";
+import type { OpResult, Schema } from "@/types/contract";
 
-type Envelope<T> = {
-  code: number;
-  message: string;
-  data: T;
-};
-
-export type PermissionMenuNode = {
-  id: number;
-  parentId: number;
-  name: string;
-  permission: string;
-  button: boolean;
-  children: PermissionMenuNode[];
-};
+export type PermissionMenuNode = Schema<"PermissionMenuNode">;
 
 export const getPermissionMenuTree = () =>
-  http.request<Envelope<PermissionMenuNode[]>>(
+  http.request<OpResult<"/admin/permission-matrix/menus/tree", "get">>(
     "get",
     "/admin/permission-matrix/menus/tree"
   );
 
 export const getRolePermissions = (roleId: number) =>
-  http.request<Envelope<number[]>>(
-    "get",
-    `/admin/permission-matrix/roles/${roleId}/permissions`
-  );
+  http.request<
+    OpResult<"/admin/permission-matrix/roles/{roleId}/permissions", "get">
+  >("get", `/admin/permission-matrix/roles/${roleId}/permissions`);
 
 export const saveRolePermissions = (roleId: number, menuIds: number[]) =>
-  http.request<Envelope<unknown>>(
-    "put",
-    `/admin/permission-matrix/roles/${roleId}/permissions`,
-    { data: { menuIds } }
-  );
+  http.request<
+    OpResult<"/admin/permission-matrix/roles/{roleId}/permissions", "put">
+  >("put", `/admin/permission-matrix/roles/${roleId}/permissions`, {
+    data: { menuIds }
+  });
