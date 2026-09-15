@@ -18,7 +18,7 @@ export const getDictTypePage = (data: {
 }) => http.request<DictTypePageResult>("post", "/system/dict/type", { data });
 
 export const getDictTypeByCode = (dictCode: string) =>
-  http.request<OpResult<"/system/dict/type/{dictCode}", "get">>(
+  http.request<OpResult<"/system/dict/type/{typeKey}", "get">>(
     "get",
     `/system/dict/type/${dictCode}`
   );
@@ -38,14 +38,14 @@ export const createDictType = (data: {
   );
 
 export const updateDictType = (id: number, data: Partial<DictType>) =>
-  http.request<OpResult<"/system/dict/type/{id}", "put">>(
+  http.request<OpResult<"/system/dict/type/{typeKey}", "put">>(
     "put",
     `/system/dict/type/${id}`,
     { data }
   );
 
 export const deleteDictType = (id: number) =>
-  http.request<OpResult<"/system/dict/type/{id}", "delete">>(
+  http.request<OpResult<"/system/dict/type/{typeKey}", "delete">>(
     "delete",
     `/system/dict/type/${id}`
   );
