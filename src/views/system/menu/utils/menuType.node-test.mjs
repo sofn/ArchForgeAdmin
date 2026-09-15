@@ -9,4 +9,3 @@ assert.match(source, /OUTSIDE_LINK:\s*4/);
 assert.match(source, /isButton === true/);
 assert.doesNotMatch(source, /value:\s*0/);
 console.log("menuType contract ok");
-

@@ -1,25 +1,25 @@
-import { blog } from "@/router/enums";
+import { cms } from "@/router/enums";
 
-export const blogRouter = {
-  path: "/blog",
-  redirect: "/blog/category/index",
+export const cmsRouter = {
+  path: "/cms",
+  redirect: "/cms/category/index",
   meta: {
     icon: "ri/article-line",
-    title: "博客管理",
-    rank: blog
+    title: "CMS管理",
+    rank: cms
   },
   children: [
     {
-      path: "/blog/category/index",
-      name: "BlogCategory",
+      path: "/cms/category/index",
+      name: "CmsCategory",
       meta: {
         title: "目录管理",
         roles: ["admin"]
       }
     },
     {
-      path: "/blog/article/index",
-      name: "BlogArticle",
+      path: "/cms/article/index",
+      name: "CmsArticle",
       meta: {
         title: "内容管理",
         roles: ["admin"]
@@ -29,12 +29,12 @@ export const blogRouter = {
 } satisfies RouteConfigsTable;
 
 export default {
-  path: "/blog",
-  redirect: "/blog/category/index",
+  path: "/cms",
+  redirect: "/cms/category/index",
   meta: {
     icon: "ri/article-line",
-    title: "博客管理",
+    title: "CMS管理",
     showLink: false,
-    rank: blog
+    rank: cms
   }
 } satisfies RouteConfigsTable;

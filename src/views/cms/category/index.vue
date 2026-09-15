@@ -9,7 +9,7 @@ import EditPen from "~icons/ep/edit-pen";
 import AddFill from "~icons/ri/add-circle-line";
 
 defineOptions({
-  name: "BlogCategory"
+  name: "CmsCategory"
 });
 
 const formRef = ref();

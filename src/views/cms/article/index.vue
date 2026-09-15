@@ -11,7 +11,7 @@ import Check from "~icons/ep/check";
 import Close from "~icons/ep/close";
 
 defineOptions({
-  name: "BlogArticle"
+  name: "CmsArticle"
 });
 
 const formRef = ref();

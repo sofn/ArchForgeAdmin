@@ -1,7 +1,7 @@
 // 模拟后端动态生成路由
 import { defineFakeRoute } from "vite-plugin-fake-server/client";
 import { system, monitor, permission, frame, tabs } from "@/router/enums";
-import { blogRouter } from "@/router/modules/blog";
+import { cmsRouter } from "@/router/modules/cms";
 
 /**
  * roles：页面级别权限，这里模拟二种 "admin"、"common"
@@ -344,7 +344,7 @@ export default defineFakeRoute([
           permissionRouter,
           frameRouter,
           tabsRouter,
-          blogRouter
+          cmsRouter
         ]
       };
     }

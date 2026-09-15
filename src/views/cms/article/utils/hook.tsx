@@ -2,20 +2,24 @@ import dayjs from "dayjs";
 import editForm from "../form.vue";
 import { message } from "@/utils/message";
 import {
-  getBlogCategoryList,
-  createBlogCategory,
-  updateBlogCategory,
-  deleteBlogCategory
-} from "@/api/blog";
+  getCmsArticleList,
+  createCmsArticle,
+  updateCmsArticle,
+  deleteCmsArticle,
+  publishCmsArticle,
+  offlineCmsArticle
+} from "@/api/cms";
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import type { FormItemProps } from "./types";
 import { deviceDetection } from "@pureadmin/utils";
+import { hasPerms } from "@/utils/auth";
 
-export function useCategory() {
+export function useArticle() {
   const form = reactive({
-    name: ""
+    title: "",
+    status: ""
   });
 
   const formRef = ref();
@@ -30,18 +34,27 @@ export function useCategory() {
 
   const columns: TableColumnList = [
     { label: "ID", prop: "id", width: 80 },
-    { label: "分类名称", prop: "name", minWidth: 160 },
+    { label: "标题", prop: "title", minWidth: 200 },
+    { label: "目录", prop: "categoryName", minWidth: 120 },
     { label: "URL标识", prop: "slug", minWidth: 160 },
-    { label: "排序", prop: "sortOrder", width: 100 },
     {
       label: "状态",
       prop: "status",
       width: 100,
-      cellRenderer: ({ row }) => (
-        <el-tag type={row.status === 1 ? undefined : "info"}>
-          {row.status === 1 ? "显示" : "隐藏"}
-        </el-tag>
-      )
+      cellRenderer: ({ row }) => {
+        const type =
+          row.status === 0 ? "info" : row.status === 1 ? "success" : "warning";
+        const label =
+          row.status === 0 ? "草稿" : row.status === 1 ? "已发布" : "已下线";
+        return <el-tag type={type}>{label}</el-tag>;
+      }
+    },
+    {
+      label: "发布时间",
+      prop: "publishTime",
+      minWidth: 160,
+      formatter: ({ publishTime }) =>
+        publishTime ? dayjs(publishTime).format("YYYY-MM-DD HH:mm:ss") : ""
     },
     {
       label: "创建时间",
@@ -50,7 +63,7 @@ export function useCategory() {
       formatter: ({ createTime }) =>
         createTime ? dayjs(createTime).format("YYYY-MM-DD HH:mm:ss") : ""
     },
-    { label: "操作", fixed: "right", width: 180, slot: "operation" }
+    { label: "操作", fixed: "right", width: 240, slot: "operation" }
   ];
 
   function handleSizeChange(val: number) {
@@ -71,8 +84,10 @@ export function useCategory() {
 
   async function onSearch() {
     loading.value = true;
-    const { code, data } = await getBlogCategoryList({
-      ...toRaw(form),
+    const status = form.status === "" ? null : Number(form.status);
+    const { code, data } = await getCmsArticleList({
+      title: toRaw(form).title,
+      status,
       currentPage: pagination.currentPage,
       pageSize: pagination.pageSize
     });
@@ -87,16 +102,20 @@ export function useCategory() {
 
   function openDialog(title = "新增", row?: FormItemProps) {
     addDialog({
-      title: `${title}目录`,
+      title: `${title}文章`,
       props: {
         formInline: {
-          name: row?.name ?? "",
+          categoryId: row?.categoryId ?? null,
+          title: row?.title ?? "",
           slug: row?.slug ?? "",
-          sortOrder: row?.sortOrder ?? 0,
-          status: row?.status ?? 1
+          summary: row?.summary ?? "",
+          content: row?.content ?? "",
+          coverImageFileId: row?.coverImageFileId ?? null,
+          coverImageUrl: row?.coverImageUrl ?? "",
+          status: row?.status ?? 0
         }
       },
-      width: "46%",
+      width: "60%",
       draggable: true,
       fullscreen: deviceDetection(),
       fullscreenIcon: true,
@@ -108,11 +127,11 @@ export function useCategory() {
         FormRef.validate(async valid => {
           if (valid) {
             if (title === "新增") {
-              await createBlogCategory(curData);
+              await createCmsArticle(curData);
             } else {
-              await updateBlogCategory({ ...curData, id: row?.id });
+              await updateCmsArticle({ ...curData, id: row?.id });
             }
-            message(`您${title}了目录${curData.name}`, { type: "success" });
+            message(`您${title}了文章${curData.title}`, { type: "success" });
             done();
             onSearch();
           }
@@ -122,8 +141,20 @@ export function useCategory() {
   }
 
   async function handleDelete(row) {
-    await deleteBlogCategory({ id: row.id });
-    message(`您删除了目录${row.name}`, { type: "success" });
+    await deleteCmsArticle({ id: row.id });
+    message(`您删除了文章${row.title}`, { type: "success" });
+    onSearch();
+  }
+
+  async function handlePublish(row) {
+    await publishCmsArticle(row.id);
+    message(`已发布文章${row.title}`, { type: "success" });
+    onSearch();
+  }
+
+  async function handleOffline(row) {
+    await offlineCmsArticle(row.id);
+    message(`已下线文章${row.title}`, { type: "success" });
     onSearch();
   }
 
@@ -139,7 +170,10 @@ export function useCategory() {
     resetForm,
     openDialog,
     handleDelete,
+    handlePublish,
+    handleOffline,
     handleSizeChange,
-    handleCurrentChange
+    handleCurrentChange,
+    hasPerms
   };
 }

@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { formRules } from "./utils/rule";
 import type { FormProps } from "./utils/types";
 import Vditor from "@/views/markdown/components/Vditor.vue";
-import { getBlogCategoryList } from "@/api/blog";
+import { getCmsCategoryList } from "@/api/cms";
 import { getToken, formatToken } from "@/utils/auth";
 import { http } from "@/utils/http";
 
@@ -30,7 +30,7 @@ const categories = ref<any[]>([]);
 const editorOptions = computed(() => ({
   height: 360,
   upload: {
-    url: "/api/blog/file/upload",
+    url: "/api/cms/file/upload",
     fieldName: "file[]",
     headers: {
       Authorization: formatToken(getToken()?.accessToken || "")
@@ -39,7 +39,7 @@ const editorOptions = computed(() => ({
 }));
 
 onMounted(async () => {
-  const { code, data } = await getBlogCategoryList({ pageSize: 100 });
+  const { code, data } = await getCmsCategoryList({ pageSize: 100 });
   if (code === 0) {
     categories.value = data.list || [];
   }
@@ -49,7 +49,7 @@ async function handleCoverUpload(options: any) {
   const formData = new FormData();
   formData.append("file[]", options.file);
   const token = getToken();
-  const res: any = await http.request("post", "/admin/blog/file/upload", {
+  const res: any = await http.request("post", "/admin/cms/file/upload", {
     data: formData,
     headers: {
       "Content-Type": "multipart/form-data",
