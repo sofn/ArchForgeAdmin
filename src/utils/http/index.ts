@@ -126,8 +126,8 @@ class PureHttp {
         }
         /** 请求白名单，放置一些不需要`token`的接口（通过设置请求白名单，防止`token`过期后再请求造成的死循环问题） */
         const whiteList = [
-          "/auth/refresh-token",
-          "/auth/login",
+          "/admin/auth/refresh-token",
+          "/admin/auth/login",
           "/refresh-token",
           "/login"
         ];

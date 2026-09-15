@@ -53,9 +53,9 @@ export const getDeptList = (data?: object) => {
 
 /** 获取系统监控-在线用户列表 */
 export const getOnlineLogsList = (data?: object) => {
-  return http.request<OpResult<"/monitor/online-logs", "post">>(
+  return http.request<OpResult<"/admin/monitor/online-logs", "post">>(
     "post",
-    "/monitor/online-logs",
+    "/admin/monitor/online-logs",
     { data }
   );
 };
@@ -90,9 +90,9 @@ export const getSystemLogsDetail = (data?: object) => {
 
 /** 获取系统监控-缓存监控信息 */
 export const getCacheInfo = () => {
-  return http.request<OpResult<"/monitor/cache-info", "get">>(
+  return http.request<OpResult<"/admin/monitor/cache-info", "get">>(
     "get",
-    "/monitor/cache-info"
+    "/admin/monitor/cache-info"
   );
 };
 

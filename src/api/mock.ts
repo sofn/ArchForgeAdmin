@@ -14,9 +14,9 @@ export const mapJson = (params?: object) => {
 
 /** 文件上传 */
 export const formUpload = data => {
-  return http.request<OpResult<"/file/upload", "post">>(
+  return http.request<OpResult<"/admin/file/upload", "post">>(
     "post",
-    "/file/upload",
+    "/admin/file/upload",
     { data },
     {
       headers: {

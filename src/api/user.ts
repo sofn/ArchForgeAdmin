@@ -2,9 +2,9 @@ import { http } from "@/utils/http";
 import type { ApiResponse, PageData } from "@/utils/http/types.d";
 import type { OpResult } from "@/types/contract";
 
-export type UserResult = OpResult<"/auth/login", "post">;
+export type UserResult = OpResult<"/admin/auth/login", "post">;
 
-export type RefreshTokenResult = OpResult<"/auth/refresh-token", "post">;
+export type RefreshTokenResult = OpResult<"/admin/auth/refresh-token", "post">;
 
 export type UserInfo = {
   /** 头像 */
@@ -25,28 +25,28 @@ export type UserInfoResult = ApiResponse<UserInfo>;
 
 type ResultTable = ApiResponse<PageData>;
 
-export type CaptchaResult = OpResult<"/auth/captchaImage", "get">;
+export type CaptchaResult = OpResult<"/admin/auth/captchaImage", "get">;
 
-export type LoginConfigResult = OpResult<"/auth/getConfig", "get">;
+export type LoginConfigResult = OpResult<"/admin/auth/getConfig", "get">;
 
 /** 登录 */
 export const getLogin = (data?: object) => {
-  return http.request<UserResult>("post", "/auth/login", { data });
+  return http.request<UserResult>("post", "/admin/auth/login", { data });
 };
 
 /** 获取验证码 */
 export const getCaptcha = () => {
-  return http.request<CaptchaResult>("get", "/auth/captchaImage");
+  return http.request<CaptchaResult>("get", "/admin/auth/captchaImage");
 };
 
 /** 获取登录配置 */
 export const getLoginConfig = () => {
-  return http.request<LoginConfigResult>("get", "/auth/getConfig");
+  return http.request<LoginConfigResult>("get", "/admin/auth/getConfig");
 };
 
 /** 刷新`token` */
 export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>("post", "/auth/refresh-token", {
+  return http.request<RefreshTokenResult>("post", "/admin/auth/refresh-token", {
     data
   });
 };

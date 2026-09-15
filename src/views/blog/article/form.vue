@@ -49,7 +49,7 @@ async function handleCoverUpload(options: any) {
   const formData = new FormData();
   formData.append("file[]", options.file);
   const token = getToken();
-  const res: any = await http.request("post", "/blog/file/upload", {
+  const res: any = await http.request("post", "/admin/blog/file/upload", {
     data: formData,
     headers: {
       "Content-Type": "multipart/form-data",

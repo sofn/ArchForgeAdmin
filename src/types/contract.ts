@@ -29,7 +29,7 @@ type JsonContent<R> = R extends { content: infer C }
 
 /**
  * The success-envelope type of a contract operation, e.g.
- * `OpResult<"/auth/login", "post">` = `ApiResponse<LoginResponse>`.
+ * `OpResult<"/admin/auth/login", "post">` = `ApiResponse<LoginResponse>`.
  *
  * The backend wraps controller returns in `{code,message,data}` at runtime
  * (ResultValueWrapper), so the generated 200 content is the *data* payload —
@@ -47,7 +47,7 @@ export type OpResult<
   ? Enveloped<JsonContent<R>>
   : never;
 
-/** The request-body JSON type of a contract operation, e.g. `OpBody<"/auth/login", "post">` = `LoginRequest`. */
+/** The request-body JSON type of a contract operation, e.g. `OpBody<"/admin/auth/login", "post">` = `LoginRequest`. */
 export type OpBody<
   P extends ContractPath,
   M extends keyof paths[P]
