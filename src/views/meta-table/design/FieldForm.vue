@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { fieldRules } from "../utils/rule";
 import type { FieldFormProps } from "../utils/types";
+import type { Schema } from "@/types/contract";
 import { getDictTypePage } from "@/api/dict";
 import type { DictType } from "@/api/dict";
+import { getMetaTableList, getMetaTableDetail } from "@/api/metaTable";
 
 const props = defineProps({
   formInline: {
@@ -40,6 +42,10 @@ const ruleFormRef = ref();
 const newFormInline = ref<FieldFormProps["formInline"]>(props.formInline);
 const dictTypes = ref<DictType[]>([]);
 const dictTypeLoading = ref(false);
+const metaTables = ref<Schema<"MetaTableResponse">[]>([]);
+const refColumnOptions = ref<string[]>([]);
+const refColumnLoading = ref(false);
+const advancedOpen = ref<string[]>([]);
 
 const dataTypeOptions = [
   { label: "文本", value: "STRING" },
@@ -106,6 +112,22 @@ const showSearchType = [
   "ENUM"
 ];
 
+/** 可选关联表：已有元表格，值为物理表名（tablePrefix + tableCode） */
+const referenceTableOptions = computed(() =>
+  metaTables.value.map(t => {
+    const physical = `${t.tablePrefix || "meta_"}${t.tableCode}`;
+    return { label: `${t.tableName}（${physical}）`, value: physical };
+  })
+);
+
+const currentRefTable = computed(() =>
+  metaTables.value.find(
+    t =>
+      `${t.tablePrefix || "meta_"}${t.tableCode}` ===
+      newFormInline.value.referenceTable
+  )
+);
+
 function isFileType(type: string) {
   return fileTypes.includes(type);
 }
@@ -152,9 +174,46 @@ watch(
     ) {
       newFormInline.value.searchType = defaultType;
     }
+    if (type === "REFERENCE") {
+      loadMetaTables();
+    }
   },
   { immediate: true }
 );
+
+// 必填与允许为空默认反向联动（物理 nullable 缺省回退 !required）；
+// 用户仍可在约束区单独覆盖 —— nullable 是 DDL 真源，required 只管表单校验。
+watch(
+  () => newFormInline.value.required,
+  required => {
+    newFormInline.value.nullable = !required;
+  }
+);
+
+watch(
+  () => newFormInline.value.referenceTable,
+  () => loadRefColumns()
+);
+
+async function loadRefColumns() {
+  const table = currentRefTable.value;
+  refColumnOptions.value = [];
+  if (!table?.id) {
+    return;
+  }
+  refColumnLoading.value = true;
+  try {
+    const res = await getMetaTableDetail(table.id);
+    if (res?.code === 0) {
+      const cols: { columnCode?: string }[] = res.data?.columns ?? [];
+      refColumnOptions.value = cols
+        .map(c => c.columnCode)
+        .filter((c): c is string => Boolean(c));
+    }
+  } finally {
+    refColumnLoading.value = false;
+  }
+}
 
 function defaultValuePlaceholder() {
   const type = newFormInline.value.dataType;
@@ -182,8 +241,26 @@ async function loadDictTypes() {
   }
 }
 
+async function loadMetaTables() {
+  if (metaTables.value.length > 0) {
+    return;
+  }
+  try {
+    const res = await getMetaTableList({ currentPage: 1, pageSize: 1000 });
+    if (res?.code === 0) {
+      metaTables.value = res.data?.list || [];
+      await loadRefColumns();
+    }
+  } catch {
+    // 列表加载失败时仍允许手填物理表名（allow-create）
+  }
+}
+
 onMounted(() => {
   loadDictTypes();
+  if (newFormInline.value.dataType === "REFERENCE") {
+    loadMetaTables();
+  }
 });
 
 defineExpose({ getRef });
@@ -196,6 +273,7 @@ defineExpose({ getRef });
     :rules="fieldRules"
     label-width="100px"
   >
+    <el-divider content-position="left">基础信息</el-divider>
     <el-form-item label="字段编码" prop="columnCode">
       <el-input
         v-model="newFormInline.columnCode"
@@ -266,54 +344,71 @@ defineExpose({ getRef });
         :placeholder="defaultValuePlaceholder()"
       />
     </el-form-item>
+
     <template v-if="showReference.includes(newFormInline.dataType)">
+      <el-divider content-position="left">关联配置</el-divider>
       <el-form-item label="关联表" prop="referenceTable">
-        <el-input
+        <el-select
           v-model="newFormInline.referenceTable"
-          placeholder="例如：sys_user 或 meta_other_table"
-        />
+          class="w-full!"
+          placeholder="选择已有元表格，或手填物理表名"
+          filterable
+          allow-create
+          clearable
+          default-first-option
+        >
+          <el-option
+            v-for="item in referenceTableOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <div v-if="currentRefTable" class="w-full text-xs text-gray-400">
+          物理表名：{{ currentRefTable.tablePrefix || "meta_"
+          }}{{ currentRefTable.tableCode }}
+        </div>
       </el-form-item>
       <el-form-item label="关联字段" prop="referenceColumn">
-        <el-input
+        <el-select
           v-model="newFormInline.referenceColumn"
+          class="w-full!"
           placeholder="默认为 id"
-        />
+          filterable
+          allow-create
+          default-first-option
+          :loading="refColumnLoading"
+        >
+          <el-option
+            v-for="item in refColumnOptions"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="显示表达式" prop="displayExpression">
         <el-input
           v-model="newFormInline.displayExpression"
           placeholder="例如：ref.username || ' - ' || ref.email"
         />
+        <div class="w-full text-xs text-gray-400">
+          ref 指代关联表行；|| 为 SQL 字符串拼接；引用字段写作 ref.列名
+        </div>
       </el-form-item>
     </template>
-    <el-form-item label="排序" prop="sort">
-      <el-input-number v-model="newFormInline.sort" :min="0" class="w-full!" />
-    </el-form-item>
-    <el-form-item
-      v-if="showEnum.includes(newFormInline.dataType)"
-      label="选择字典"
-      prop="dictCode"
-    >
-      <el-select
-        v-model="newFormInline.dictCode"
-        class="w-full!"
-        placeholder="请选择字典"
-        filterable
-        clearable
-        :loading="dictTypeLoading"
-      >
-        <el-option
-          v-for="item in dictTypes"
-          :key="item.dictCode"
-          :label="item.dictName"
-          :value="item.dictCode"
-        />
-      </el-select>
-    </el-form-item>
+
+    <el-divider content-position="left">约束与索引</el-divider>
     <el-form-item label="约束">
       <el-checkbox v-model="newFormInline.required">必填</el-checkbox>
       <el-checkbox v-model="newFormInline.unique">唯一</el-checkbox>
       <el-checkbox v-model="newFormInline.index">索引</el-checkbox>
+    </el-form-item>
+    <el-form-item label="允许为空">
+      <el-checkbox v-model="newFormInline.nullable" />
+      <span class="ml-2 text-xs text-gray-400">
+        物理列是否允许 NULL（DDL 真源）；默认与「必填」反向，可单独覆盖
+      </span>
     </el-form-item>
     <template
       v-if="
@@ -341,22 +436,57 @@ defineExpose({ getRef });
         />
       </el-form-item>
     </template>
-    <el-form-item
-      v-if="showSearchType.includes(newFormInline.dataType)"
-      label="搜索方式"
-    >
-      <el-select v-model="newFormInline.searchType" class="w-full!">
-        <el-option
-          v-for="item in searchTypeOptions(newFormInline.dataType)"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="其他">
-      <el-checkbox v-model="newFormInline.searchable">可搜索</el-checkbox>
-      <el-checkbox v-model="newFormInline.listVisible">列表显示</el-checkbox>
-    </el-form-item>
+
+    <el-collapse v-model="advancedOpen" class="mb-4">
+      <el-collapse-item title="高级配置" name="advanced">
+        <el-form-item
+          v-if="showEnum.includes(newFormInline.dataType)"
+          label="选择字典"
+          prop="dictCode"
+        >
+          <el-select
+            v-model="newFormInline.dictCode"
+            class="w-full!"
+            placeholder="请选择字典"
+            filterable
+            clearable
+            :loading="dictTypeLoading"
+          >
+            <el-option
+              v-for="item in dictTypes"
+              :key="item.dictCode"
+              :label="item.dictName"
+              :value="item.dictCode"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="showSearchType.includes(newFormInline.dataType)"
+          label="搜索方式"
+        >
+          <el-select v-model="newFormInline.searchType" class="w-full!">
+            <el-option
+              v-for="item in searchTypeOptions(newFormInline.dataType)"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序" prop="sort">
+          <el-input-number
+            v-model="newFormInline.sort"
+            :min="0"
+            class="w-full!"
+          />
+        </el-form-item>
+        <el-form-item label="展示">
+          <el-checkbox v-model="newFormInline.searchable">可搜索</el-checkbox>
+          <el-checkbox v-model="newFormInline.listVisible"
+            >列表显示</el-checkbox
+          >
+        </el-form-item>
+      </el-collapse-item>
+    </el-collapse>
   </el-form>
 </template>

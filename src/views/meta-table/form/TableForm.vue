@@ -162,6 +162,10 @@ defineExpose({ getRef, getForm });
     </el-form-item>
     <el-form-item label="前缀" prop="tablePrefix">
       <el-input v-model="newFormInline.tablePrefix" placeholder="默认 meta_" />
+      <div class="w-full text-xs text-gray-400">
+        最终物理表名：{{ newFormInline.tablePrefix || "meta_"
+        }}{{ newFormInline.tableCode || "〈表编码〉" }}
+      </div>
     </el-form-item>
     <el-form-item label="状态" prop="status">
       <el-radio-group v-model="newFormInline.status">

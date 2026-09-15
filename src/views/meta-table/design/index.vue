@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, h } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import TableForm from "../form/TableForm.vue";
+import SchemaPreviewContent from "./SchemaPreviewContent.vue";
 import {
   createMetaTable,
   updateMetaTable,
+  previewMetaTableSchema,
   getMetaTableDetail
 } from "@/api/metaTable";
+import type { SchemaPreview } from "@/api/metaTable";
 import { message } from "@/utils/message";
 import { assertOk, EnvelopeError } from "@/utils/http/envelope";
-import { cloneDeep } from "lodash-es";
-import type { MetaColumn, MetaTable } from "../utils/types";
+import { addDialog } from "@/components/ReDialog";
+import { deviceDetection } from "@pureadmin/utils";
+import type { MetaTable } from "../utils/types";
 
 defineOptions({
   name: "MetaTableDesign"
@@ -28,7 +32,6 @@ const formInline = ref<MetaTable>({
   status: 1,
   columns: []
 });
-const originalColumns = ref<MetaColumn[]>([]);
 const isEdit = ref(false);
 const id = ref<number | undefined>(undefined);
 
@@ -43,10 +46,52 @@ onMounted(async () => {
         ...(data as MetaTable),
         columns: data.columns ?? []
       };
-      originalColumns.value = cloneDeep(formInline.value.columns ?? []);
     }
   }
 });
+
+async function submitUpdate(curData: MetaTable) {
+  await assertOk(updateMetaTable(id.value!, curData));
+  message(`已修改元表格"${curData.tableName}"`, { type: "success" });
+  closeTabAndBack();
+}
+
+/** 有结构变更时弹出 diff 预览（含违规行数/处置方式），确认后才提交。 */
+function openPreviewDialog(curData: MetaTable, preview: SchemaPreview) {
+  addDialog({
+    title: `Schema 变更预览（${preview.changes.length} 项）`,
+    props: { preview },
+    width: "60%",
+    draggable: true,
+    fullscreen: deviceDetection(),
+    fullscreenIcon: true,
+    closeOnClickModal: false,
+    contentRenderer: () => h(SchemaPreviewContent, { preview }),
+    beforeSure: async done => {
+      try {
+        await submitUpdate(curData);
+        done();
+      } catch (e) {
+        if (e instanceof EnvelopeError) {
+          message(e.message, { type: "error" });
+        }
+      }
+    }
+  });
+}
+
+async function saveEdit(curData: MetaTable) {
+  const preview = await assertOk(previewMetaTableSchema(id.value!, curData));
+  const changes = preview.data?.changes ?? [];
+  if (changes.length === 0) {
+    await submitUpdate(curData);
+    return;
+  }
+  openPreviewDialog(curData, {
+    changes,
+    dangerous: preview.data?.dangerous ?? false
+  });
+}
 
 async function handleSave() {
   const formRef = tableFormRef.value?.getRef();
@@ -60,25 +105,12 @@ async function handleSave() {
     }
     try {
       if (isEdit.value && id.value) {
-        const dangerous = hasDangerousSchemaChange(
-          originalColumns.value,
-          curData.columns ?? []
-        );
-        let force = false;
-        if (dangerous) {
-          const ok = confirm(
-            "检测到字段删除、类型变更、重命名或 NOT NULL 调整，这些操作可能破坏现有数据或依赖，是否继续？"
-          );
-          if (!ok) return;
-          force = true;
-        }
-        await assertOk(updateMetaTable(id.value, { ...curData, force }));
-        message(`已修改元表格"${curData.tableName}"`, { type: "success" });
+        await saveEdit(curData);
       } else {
         await assertOk(createMetaTable(curData));
         message(`已新增元表格"${curData.tableName}"`, { type: "success" });
+        closeTabAndBack();
       }
-      closeTabAndBack();
     } catch (e) {
       // HTTP errors are toasted by the http interceptor; envelope failures here
       if (e instanceof EnvelopeError) message(e.message, { type: "error" });
@@ -94,28 +126,6 @@ function closeTabAndBack() {
   const currentPath = route.path;
   useMultiTagsStoreHook().handleTags("splice", currentPath);
   router.push("/meta-table/index");
-}
-
-function hasDangerousSchemaChange(
-  original: MetaColumn[],
-  current: MetaColumn[]
-): boolean {
-  const currentById = new Map(current.map(c => [c.id, c]));
-  for (const oldCol of original) {
-    const newCol = currentById.get(oldCol.id);
-    if (!newCol) return true;
-    if (newCol.columnCode !== oldCol.columnCode) return true;
-    if (
-      newCol.dataType !== oldCol.dataType ||
-      newCol.length !== oldCol.length ||
-      newCol.precision !== oldCol.precision ||
-      newCol.scale !== oldCol.scale ||
-      newCol.required !== oldCol.required
-    ) {
-      return true;
-    }
-  }
-  return false;
 }
 </script>
 

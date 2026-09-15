@@ -1573,14 +1573,15 @@ export interface paths {
     };
     /** 获取元表格详情 */
     get: operations["detail"];
-    /** 更新元表格 */
+    /** 更新元表格（结构变更，columns 必填；仅改元信息用 PATCH） */
     put: operations["update"];
     post?: never;
     /** 删除元表格 */
     delete: operations["delete"];
     options?: never;
     head?: never;
-    patch?: never;
+    /** 更新元表格元信息（仅名称/描述/状态，不动表结构） */
+    patch: operations["updateMeta"];
     trace?: never;
   };
   "/meta-table/{id}/copy": {
@@ -1764,6 +1765,23 @@ export interface paths {
     get: operations["migrations"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/meta-table/{id}/schema-preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** 预览 Schema 变更（diff + 违规行数 + DDL，不执行） */
+    post: operations["schemaPreview"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2978,11 +2996,11 @@ export interface components {
       arrayElementType: string;
       searchType: string;
       dictCode: string;
-      searchableColumn: boolean;
-      listVisibleColumn: boolean;
       uniqueColumn: boolean;
       indexedColumn: boolean;
       nullableColumn: boolean;
+      listVisibleColumn: boolean;
+      searchableColumn: boolean;
     };
     MetaColumnRequest: {
       /** Format: int64 */
@@ -3224,6 +3242,21 @@ export interface components {
     PermissionUpdateRequest: {
       menuIds: number[];
     };
+    PreviewChange: {
+      type: string;
+      columnCode: string;
+      oldColumnCode: string;
+      oldType: string;
+      newType: string;
+      oldDefault: string;
+      newDefault: string;
+      oldNullable: boolean;
+      newNullable: boolean;
+      /** Format: int64 */
+      violations: number;
+      action: string;
+      ddl: string[];
+    };
     PreviewColumn: {
       columnCode: string;
       comment: string;
@@ -3368,6 +3401,10 @@ export interface components {
       startedAt: string;
       /** Format: date-time */
       finishedAt: string;
+    };
+    SchemaPreview: {
+      changes: components["schemas"]["PreviewChange"][];
+      dangerous: boolean;
     };
     ServerInfoResponse: {
       cpu: Record<string, never>;
@@ -5869,6 +5906,32 @@ export interface operations {
       };
     };
   };
+  updateMeta: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MetaTableUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": boolean;
+        };
+      };
+    };
+  };
   copy: {
     parameters: {
       query?: never;
@@ -6138,6 +6201,32 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["MetaTableMigration"][];
+        };
+      };
+    };
+  };
+  schemaPreview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MetaTableUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SchemaPreview"];
         };
       };
     };

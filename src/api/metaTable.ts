@@ -25,11 +25,32 @@ export const createMetaTable = (data?: object) => {
   );
 };
 
-/** 更新元表格 */
+/** 更新元表格（结构变更，columns 必填） */
 export const updateMetaTable = (id: number, data?: object) => {
   return http.request<OpResult<"/meta-table/{id}", "put">>(
     "put",
     `/meta-table/${id}`,
+    { data }
+  );
+};
+
+/** 更新元表格元信息（仅名称/描述/状态，不动表结构） */
+export const patchMetaTable = (id: number, data?: object) => {
+  return http.request<OpResult<"/meta-table/{id}", "patch">>(
+    "patch",
+    `/meta-table/${id}`,
+    { data }
+  );
+};
+
+export type SchemaPreview = Schema<"SchemaPreview">;
+export type PreviewChange = Schema<"PreviewChange">;
+
+/** 预览 Schema 变更（diff + 违规行数 + DDL，只读不执行） */
+export const previewMetaTableSchema = (id: number, data?: object) => {
+  return http.request<OpResult<"/meta-table/{id}/schema-preview", "post">>(
+    "post",
+    `/meta-table/${id}/schema-preview`,
     { data }
   );
 };
