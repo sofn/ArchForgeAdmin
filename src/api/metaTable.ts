@@ -158,9 +158,11 @@ export const getImportableTables = () => {
 
 /** 预览物理表导入映射 */
 export const getImportPreview = (tableName: string) => {
-  return http.request<
-    OpResult<"/admin/meta-table/import-preview/{tableName}", "get">
-  >("get", `/admin/meta-table/import-preview/${tableName}`);
+  return http.request<OpResult<"/admin/meta-table/import-preview", "get">>(
+    "get",
+    "/admin/meta-table/import-preview",
+    { params: { tableName } }
+  );
 };
 
 /** 导入已有物理表 */
