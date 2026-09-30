@@ -198,12 +198,12 @@ watch(
 async function loadRefColumns() {
   const table = currentRefTable.value;
   refColumnOptions.value = [];
-  if (!table?.id) {
+  if (!table?.tableCode) {
     return;
   }
   refColumnLoading.value = true;
   try {
-    const res = await getMetaTableDetail(table.id);
+    const res = await getMetaTableDetail(table.tableCode);
     if (res?.code === 0) {
       const cols: { columnCode?: string }[] = res.data?.columns ?? [];
       refColumnOptions.value = cols

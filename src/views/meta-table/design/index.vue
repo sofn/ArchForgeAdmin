@@ -33,14 +33,14 @@ const formInline = ref<MetaTable>({
   columns: []
 });
 const isEdit = ref(false);
-const id = ref<number | undefined>(undefined);
+const tableCode = ref<string | undefined>(undefined);
 
 onMounted(async () => {
-  const queryId = route.query.id;
-  if (queryId) {
+  const queryCode = route.query.tableCode;
+  if (typeof queryCode === "string" && queryCode) {
     isEdit.value = true;
-    id.value = Number(queryId);
-    const { code, data } = await getMetaTableDetail(id.value);
+    tableCode.value = queryCode;
+    const { code, data } = await getMetaTableDetail(queryCode);
     if (code === 0) {
       formInline.value = {
         ...(data as MetaTable),
@@ -51,7 +51,7 @@ onMounted(async () => {
 });
 
 async function submitUpdate(curData: MetaTable) {
-  await assertOk(updateMetaTable(id.value!, curData));
+  await assertOk(updateMetaTable(tableCode.value!, curData));
   message(`已修改元表格"${curData.tableName}"`, { type: "success" });
   closeTabAndBack();
 }
@@ -81,7 +81,9 @@ function openPreviewDialog(curData: MetaTable, preview: SchemaPreview) {
 }
 
 async function saveEdit(curData: MetaTable) {
-  const preview = await assertOk(previewMetaTableSchema(id.value!, curData));
+  const preview = await assertOk(
+    previewMetaTableSchema(tableCode.value!, curData)
+  );
   const changes = preview.data?.changes ?? [];
   if (changes.length === 0) {
     await submitUpdate(curData);
@@ -104,7 +106,7 @@ async function handleSave() {
       return;
     }
     try {
-      if (isEdit.value && id.value) {
+      if (isEdit.value && tableCode.value) {
         await saveEdit(curData);
       } else {
         await assertOk(createMetaTable(curData));

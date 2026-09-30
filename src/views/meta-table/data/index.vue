@@ -12,8 +12,8 @@ import Upload from "~icons/ep/upload";
 import Refresh from "~icons/ep/refresh";
 
 const props = defineProps({
-  tableId: {
-    type: Number,
+  tableCode: {
+    type: String,
     required: true
   },
   tableName: {
@@ -52,7 +52,7 @@ const {
   handleSizeChange,
   handleCurrentChange
 } = useMetaData(
-  props.tableId,
+  props.tableCode,
   props.tableName,
   props.columns,
   props.allColumns

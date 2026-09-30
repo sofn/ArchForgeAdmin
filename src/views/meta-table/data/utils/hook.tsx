@@ -27,7 +27,7 @@ function defaultSearchType(column: MetaColumn): string {
 }
 
 export function useMetaData(
-  tableId: number,
+  tableCode: string,
   tableName: string,
   columns: MetaColumn[],
   allColumns: MetaColumn[]
@@ -127,7 +127,7 @@ export function useMetaData(
 
   async function onSearch() {
     loading.value = true;
-    const { code, data } = await getMetaDataList(tableId, {
+    const { code, data } = await getMetaDataList(tableCode, {
       filters: toRaw(filters),
       currentPage: pagination.currentPage,
       pageSize: pagination.pageSize
@@ -164,10 +164,10 @@ export function useMetaData(
           if (!valid) return;
           try {
             if (title === "新增") {
-              await assertOk(createMetaData(tableId, curData));
+              await assertOk(createMetaData(tableCode, curData));
               message("数据新增成功", { type: "success" });
             } else {
-              await assertOk(updateMetaData(tableId, row.id, curData));
+              await assertOk(updateMetaData(tableCode, row.id, curData));
               message("数据修改成功", { type: "success" });
             }
             done();
@@ -184,7 +184,7 @@ export function useMetaData(
 
   async function handleDeleteData(row: any) {
     try {
-      const { data } = await assertOk(deleteMetaData(tableId, row.id));
+      const { data } = await assertOk(deleteMetaData(tableCode, row.id));
       if (data !== true) {
         message("数据删除失败", { type: "error" });
         return;
@@ -203,7 +203,7 @@ export function useMetaData(
   ];
 
   async function handleExport(format = "EXCEL") {
-    const res = await exportMetaData(tableId, format);
+    const res = await exportMetaData(tableCode, format);
     const typeMap = {
       EXCEL:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -228,7 +228,7 @@ export function useMetaData(
     input.onchange = async (event: any) => {
       const file = event.target.files?.[0];
       if (!file) return;
-      const res = await importMetaData(tableId, file, format);
+      const res = await importMetaData(tableCode, file, format);
       if (res.code === 0) {
         const data = res.data as {
           total: number;

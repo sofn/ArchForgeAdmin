@@ -134,8 +134,8 @@ export function useMetaTable() {
 
   async function openTableTab(title = "新增", row?: MetaTable) {
     const query: Record<string, string> = {};
-    if (title === "修改" && row?.id) {
-      query.id = String(row.id);
+    if (title === "修改" && row?.tableCode) {
+      query.tableCode = row.tableCode;
     }
 
     const path = "/meta-table/design";
@@ -153,7 +153,7 @@ export function useMetaTable() {
 
   async function handleCopy(row: MetaTable) {
     try {
-      const { data } = await assertOk(copyMetaTable(row.id));
+      const { data } = await assertOk(copyMetaTable(row.tableCode));
       message(`已复制元表格"${row.tableName}"，新表格ID：${data}`, {
         type: "success"
       });
@@ -165,7 +165,7 @@ export function useMetaTable() {
 
   async function handleDelete(row: MetaTable) {
     try {
-      const { data } = await assertOk(checkDeleteMetaTable(row.id));
+      const { data } = await assertOk(checkDeleteMetaTable(row.tableCode));
       if (data > 0) {
         if (
           !confirm(
@@ -174,9 +174,9 @@ export function useMetaTable() {
         ) {
           return;
         }
-        await assertOk(deleteMetaTable(row.id, true));
+        await assertOk(deleteMetaTable(row.tableCode, true));
       } else {
-        await assertOk(deleteMetaTable(row.id, false));
+        await assertOk(deleteMetaTable(row.tableCode, false));
       }
       message(`您删除了元表格"${row.tableName}"`, { type: "success" });
       onSearch();
@@ -186,7 +186,7 @@ export function useMetaTable() {
   }
 
   async function openDataDialog(row: MetaTable) {
-    const detail = await getMetaTableDetail(row.id);
+    const detail = await getMetaTableDetail(row.tableCode);
     if (detail.code !== 0) return;
     const table = detail.data as MetaTable;
     const visibleColumns = (table.columns ?? []).filter(c => c.listVisible);
@@ -201,7 +201,7 @@ export function useMetaTable() {
       hideFooter: true,
       contentRenderer: () =>
         h(DataManage, {
-          tableId: row.id,
+          tableCode: row.tableCode,
           tableName: table.tableName,
           columns: visibleColumns,
           allColumns: table.columns ?? []

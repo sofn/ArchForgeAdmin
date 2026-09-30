@@ -47,7 +47,7 @@ const handleGenerate = async (row: any) => {
       { confirmButtonText: "确认", cancelButtonText: "取消", type: "warning" }
     );
     const { data } = await assertOk(
-      generateMetaTableCode(row.id, {
+      generateMetaTableCode(row.tableCode, {
         backendDir: `ArchForge/example/${row.tableCode}`,
         frontendDir: `ArchForgeAdmin/src/views/${row.tableCode}`,
         overwrite: false

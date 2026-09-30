@@ -913,7 +913,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}": {
+  "/admin/meta-table/{tableCode}": {
     parameters: {
       query?: never;
       header?: never;
@@ -933,7 +933,7 @@ export interface paths {
     patch: operations["updateMeta"];
     trace?: never;
   };
-  "/admin/meta-table/{id}/copy": {
+  "/admin/meta-table/{tableCode}/copy": {
     parameters: {
       query?: never;
       header?: never;
@@ -950,7 +950,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/data": {
+  "/admin/meta-table/{tableCode}/data": {
     parameters: {
       query?: never;
       header?: never;
@@ -967,7 +967,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/data/create": {
+  "/admin/meta-table/{tableCode}/data/create": {
     parameters: {
       query?: never;
       header?: never;
@@ -984,7 +984,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/data/{dataId}": {
+  "/admin/meta-table/{tableCode}/data/{dataId}": {
     parameters: {
       query?: never;
       header?: never;
@@ -1001,7 +1001,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/data/{dataId}/delete": {
+  "/admin/meta-table/{tableCode}/data/{dataId}/delete": {
     parameters: {
       query?: never;
       header?: never;
@@ -1018,7 +1018,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/delete-check": {
+  "/admin/meta-table/{tableCode}/delete-check": {
     parameters: {
       query?: never;
       header?: never;
@@ -1035,7 +1035,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/export": {
+  "/admin/meta-table/{tableCode}/export": {
     parameters: {
       query?: never;
       header?: never;
@@ -1052,7 +1052,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/export-migration": {
+  "/admin/meta-table/{tableCode}/export-migration": {
     parameters: {
       query?: never;
       header?: never;
@@ -1069,7 +1069,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/generate": {
+  "/admin/meta-table/{tableCode}/generate": {
     parameters: {
       query?: never;
       header?: never;
@@ -1086,7 +1086,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/import": {
+  "/admin/meta-table/{tableCode}/import": {
     parameters: {
       query?: never;
       header?: never;
@@ -1103,7 +1103,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/migrations": {
+  "/admin/meta-table/{tableCode}/migrations": {
     parameters: {
       query?: never;
       header?: never;
@@ -1120,7 +1120,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/admin/meta-table/{id}/schema-preview": {
+  "/admin/meta-table/{tableCode}/schema-preview": {
     parameters: {
       query?: never;
       header?: never;
@@ -5219,7 +5219,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5242,7 +5242,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5271,7 +5271,7 @@ export interface operations {
       };
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5294,7 +5294,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5321,7 +5321,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5344,7 +5344,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5371,7 +5371,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5400,7 +5400,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
         dataId: number;
       };
       cookie?: never;
@@ -5430,7 +5430,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
         dataId: number;
       };
       cookie?: never;
@@ -5454,7 +5454,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5479,7 +5479,7 @@ export interface operations {
       };
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5500,7 +5500,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5523,7 +5523,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5552,7 +5552,7 @@ export interface operations {
       };
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5582,7 +5582,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
@@ -5605,7 +5605,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        tableCode: string;
       };
       cookie?: never;
     };
