@@ -31,6 +31,15 @@ export const TokenKey = "authorized-token";
  * */
 export const multipleTabsKey = "multiple-tabs";
 
+/**
+ * 令牌 cookie 只由本 SPA 的脚本读取、再放进 Authorization 头，从不需要随跨站请求发出：
+ * 固定 SameSite=Strict，HTTPS 下加 Secure（纯 HTTP 的本地开发不加，否则浏览器会丢弃它）。
+ * HttpOnly 无法由脚本设置，要彻底防 XSS 读 token 需要 BFF（另立项）。
+ */
+function cookieAttributes(): Cookies.CookieAttributes {
+  return { sameSite: "strict", secure: window.location.protocol === "https:" };
+}
+
 /** 获取`token` */
 export function getToken(): DataInfo<number> {
   // 此处与`TokenKey`相同，此写法解决初始化时`Cookies`中不存在`TokenKey`报错
@@ -54,18 +63,20 @@ export function setToken(data: DataInfo<string>) {
 
   expires > 0
     ? Cookies.set(TokenKey, cookieString, {
+        ...cookieAttributes(),
         expires: (expires - Date.now()) / 86400000
       })
-    : Cookies.set(TokenKey, cookieString);
+    : Cookies.set(TokenKey, cookieString, cookieAttributes());
 
   Cookies.set(
     multipleTabsKey,
     "true",
     isRemembered
       ? {
+          ...cookieAttributes(),
           expires: loginDay
         }
-      : {}
+      : cookieAttributes()
   );
 
   function setUserKey({ avatar, username, nickname, roles, permissions }) {

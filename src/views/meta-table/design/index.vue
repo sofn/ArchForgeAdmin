@@ -47,6 +47,12 @@ onMounted(async () => {
         columns: data.columns ?? []
       };
     }
+  } else if (route.query.id) {
+    // 升级前的书签/标签页用数字 id 定位元表格，现在 API 只认 tableCode：别落进"新增"表单让人误以为是新建
+    message("该链接使用旧版编号，已失效；请从元表格列表重新进入", {
+      type: "warning"
+    });
+    closeTabAndBack();
   }
 });
 
