@@ -105,20 +105,21 @@ export function useConfig() {
 
   async function onSearch() {
     loading.value = true;
-    const { code, data } = await getConfigList({
-      ...toRaw(form),
-      currentPage: pagination.currentPage,
-      pageSize: pagination.pageSize
-    });
-    if (code === 0) {
-      dataList.value = data.list;
-      pagination.total = data.total;
-      pagination.pageSize = data.pageSize;
-      pagination.currentPage = data.currentPage;
-    }
-    setTimeout(() => {
+    try {
+      const { code, data } = await getConfigList({
+        ...toRaw(form),
+        currentPage: pagination.currentPage,
+        pageSize: pagination.pageSize
+      });
+      if (code === 0) {
+        dataList.value = data.list;
+        pagination.total = data.total;
+        pagination.pageSize = data.pageSize;
+        pagination.currentPage = data.currentPage;
+      }
+    } finally {
       loading.value = false;
-    }, 300);
+    }
   }
 
   function openDialog(title = "新增", row?: FormItemProps) {

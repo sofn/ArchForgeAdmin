@@ -21,7 +21,7 @@ export const getDictTypePage = (data: {
 export const getDictTypeByCode = (dictCode: string) =>
   http.request<OpResult<"/admin/system/dict/type/{typeKey}", "get">>(
     "get",
-    `/admin/system/dict/type/${dictCode}`
+    `/admin/system/dict/type/${encodeURIComponent(dictCode)}`
   );
 
 export const createDictType = (data: {

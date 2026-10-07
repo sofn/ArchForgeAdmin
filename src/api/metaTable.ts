@@ -17,7 +17,10 @@ export const getMetaTableList = (data?: object) => {
 
 /** 获取元表格详情（按 tableCode 寻址）—— detail.data 含 options.value:Object 的透传字段，契约类型比视图类型弱，保持宽松 */
 export const getMetaTableDetail = (tableCode: string) => {
-  return http.request<Result>("get", `/admin/meta-table/${tableCode}`);
+  return http.request<Result>(
+    "get",
+    `/admin/meta-table/${encodeURIComponent(tableCode)}`
+  );
 };
 
 /** 创建元表格 */
@@ -33,7 +36,7 @@ export const createMetaTable = (data?: object) => {
 export const updateMetaTable = (tableCode: string, data?: object) => {
   return http.request<OpResult<"/admin/meta-table/{tableCode}", "put">>(
     "put",
-    `/admin/meta-table/${tableCode}`,
+    `/admin/meta-table/${encodeURIComponent(tableCode)}`,
     { data }
   );
 };
@@ -42,7 +45,7 @@ export const updateMetaTable = (tableCode: string, data?: object) => {
 export const patchMetaTable = (tableCode: string, data?: object) => {
   return http.request<OpResult<"/admin/meta-table/{tableCode}", "patch">>(
     "patch",
-    `/admin/meta-table/${tableCode}`,
+    `/admin/meta-table/${encodeURIComponent(tableCode)}`,
     { data }
   );
 };
@@ -54,14 +57,18 @@ export type PreviewChange = Schema<"PreviewChange">;
 export const previewMetaTableSchema = (tableCode: string, data?: object) => {
   return http.request<
     OpResult<"/admin/meta-table/{tableCode}/schema-preview", "post">
-  >("post", `/admin/meta-table/${tableCode}/schema-preview`, { data });
+  >(
+    "post",
+    `/admin/meta-table/${encodeURIComponent(tableCode)}/schema-preview`,
+    { data }
+  );
 };
 
 /** 复制元表格 */
 export const copyMetaTable = (tableCode: string) => {
   return http.request<OpResult<"/admin/meta-table/{tableCode}/copy", "post">>(
     "post",
-    `/admin/meta-table/${tableCode}/copy`
+    `/admin/meta-table/${encodeURIComponent(tableCode)}/copy`
   );
 };
 
@@ -69,14 +76,14 @@ export const copyMetaTable = (tableCode: string) => {
 export const checkDeleteMetaTable = (tableCode: string) => {
   return http.request<
     OpResult<"/admin/meta-table/{tableCode}/delete-check", "get">
-  >("get", `/admin/meta-table/${tableCode}/delete-check`);
+  >("get", `/admin/meta-table/${encodeURIComponent(tableCode)}/delete-check`);
 };
 
 /** 删除元表格 */
 export const deleteMetaTable = (tableCode: string, force = false) => {
   return http.request<OpResult<"/admin/meta-table/{tableCode}", "delete">>(
     "delete",
-    `/admin/meta-table/${tableCode}?force=${force}`
+    `/admin/meta-table/${encodeURIComponent(tableCode)}?force=${force}`
   );
 };
 
@@ -84,7 +91,7 @@ export const deleteMetaTable = (tableCode: string, force = false) => {
 export const getMetaDataList = (tableCode: string, data?: object) => {
   return http.request<OpResult<"/admin/meta-table/{tableCode}/data", "post">>(
     "post",
-    `/admin/meta-table/${tableCode}/data`,
+    `/admin/meta-table/${encodeURIComponent(tableCode)}/data`,
     { data }
   );
 };
@@ -93,7 +100,9 @@ export const getMetaDataList = (tableCode: string, data?: object) => {
 export const createMetaData = (tableCode: string, data?: object) => {
   return http.request<
     OpResult<"/admin/meta-table/{tableCode}/data/create", "post">
-  >("post", `/admin/meta-table/${tableCode}/data/create`, { data });
+  >("post", `/admin/meta-table/${encodeURIComponent(tableCode)}/data/create`, {
+    data
+  });
 };
 
 /** 更新元表格数据 */
@@ -104,21 +113,28 @@ export const updateMetaData = (
 ) => {
   return http.request<
     OpResult<"/admin/meta-table/{tableCode}/data/{dataId}", "put">
-  >("put", `/admin/meta-table/${tableCode}/data/${dataId}`, { data });
+  >(
+    "put",
+    `/admin/meta-table/${encodeURIComponent(tableCode)}/data/${dataId}`,
+    { data }
+  );
 };
 
 /** 删除元表格数据 */
 export const deleteMetaData = (tableCode: string, dataId: number) => {
   return http.request<
     OpResult<"/admin/meta-table/{tableCode}/data/{dataId}/delete", "post">
-  >("post", `/admin/meta-table/${tableCode}/data/${dataId}/delete`);
+  >(
+    "post",
+    `/admin/meta-table/${encodeURIComponent(tableCode)}/data/${dataId}/delete`
+  );
 };
 
 /** 导出元表格数据 */
 export const exportMetaData = (tableCode: string, format = "EXCEL") => {
   return http.request<Blob>(
     "get",
-    `/admin/meta-table/${tableCode}/export?format=${format}`,
+    `/admin/meta-table/${encodeURIComponent(tableCode)}/export?format=${format}`,
     {
       responseType: "blob"
     }
@@ -135,7 +151,7 @@ export const importMetaData = (
   formData.append("file", file);
   return http.request<Result>(
     "post",
-    `/admin/meta-table/${tableCode}/import?format=${format}`,
+    `/admin/meta-table/${encodeURIComponent(tableCode)}/import?format=${format}`,
     {
       data: formData,
       headers: { "Content-Type": "multipart/form-data" }
@@ -189,5 +205,7 @@ export const generateMetaTableCode = (
 ) => {
   return http.request<
     OpResult<"/admin/meta-table/{tableCode}/generate", "post">
-  >("post", `/admin/meta-table/${tableCode}/generate`, { data });
+  >("post", `/admin/meta-table/${encodeURIComponent(tableCode)}/generate`, {
+    data
+  });
 };

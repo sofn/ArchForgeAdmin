@@ -30,7 +30,7 @@ export async function streamChatMessage(
 ) {
   const token = getToken();
   const response = await fetch(
-    `/api/admin/chat/sessions/${sessionId}/messages`,
+    `/api/admin/chat/sessions/${encodeURIComponent(sessionId)}/messages`,
     {
       method: "POST",
       headers: {

@@ -84,20 +84,23 @@ export function useArticle() {
 
   async function onSearch() {
     loading.value = true;
-    const status = form.status === "" ? null : Number(form.status);
-    const { code, data } = await getCmsArticleList({
-      title: toRaw(form).title,
-      status,
-      currentPage: pagination.currentPage,
-      pageSize: pagination.pageSize
-    });
-    if (code === 0) {
-      dataList.value = data.list;
-      pagination.total = data.total;
-      pagination.pageSize = data.pageSize;
-      pagination.currentPage = data.currentPage;
+    try {
+      const status = form.status === "" ? null : Number(form.status);
+      const { code, data } = await getCmsArticleList({
+        title: toRaw(form).title,
+        status,
+        currentPage: pagination.currentPage,
+        pageSize: pagination.pageSize
+      });
+      if (code === 0) {
+        dataList.value = data.list;
+        pagination.total = data.total;
+        pagination.pageSize = data.pageSize;
+        pagination.currentPage = data.currentPage;
+      }
+    } finally {
+      loading.value = false;
     }
-    setTimeout(() => (loading.value = false), 300);
   }
 
   function openDialog(title = "新增", row?: FormItemProps) {
