@@ -4,12 +4,14 @@ import { getMineLogs } from "@/api/user";
 import { reactive, ref, onMounted } from "vue";
 import { deviceDetection } from "@pureadmin/utils";
 import type { PaginationProps } from "@pureadmin/table";
+import { latestRequest } from "@/utils/latestRequest";
 
 defineOptions({
   name: "SecurityLog"
 });
 
 const loading = ref(true);
+const searchTicket = latestRequest();
 const dataList = ref([]);
 const pagination = reactive<PaginationProps>({
   total: 0,
@@ -54,9 +56,11 @@ const columns: TableColumnList = [
 ];
 
 async function onSearch() {
+  const isLatest = searchTicket();
   loading.value = true;
   try {
     const { code, data } = await getMineLogs();
+    if (!isLatest()) return;
     if (code === 0) {
       dataList.value = data.list;
       pagination.total = data.total;
@@ -64,7 +68,7 @@ async function onSearch() {
       pagination.currentPage = data.currentPage;
     }
   } finally {
-    loading.value = false;
+    if (isLatest()) loading.value = false;
   }
 }
 

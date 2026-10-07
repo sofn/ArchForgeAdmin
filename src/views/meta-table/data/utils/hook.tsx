@@ -15,6 +15,7 @@ import { reactive, ref, onMounted, h, toRaw } from "vue";
 import { deviceDetection } from "@pureadmin/utils";
 import type { MetaColumn } from "../../utils/types";
 import { useDict } from "@/utils/dict";
+import { latestRequest } from "@/utils/latestRequest";
 
 function defaultSearchType(column: MetaColumn): string {
   if (column.searchType) {
@@ -35,6 +36,7 @@ export function useMetaData(
   const filters = reactive<Record<string, any>>({});
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const pagination = reactive<PaginationProps>({
     total: 0,
     pageSize: 10,
@@ -126,6 +128,7 @@ export function useMetaData(
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getMetaDataList(tableCode, {
@@ -133,6 +136,7 @@ export function useMetaData(
         currentPage: pagination.currentPage,
         pageSize: pagination.pageSize
       });
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -140,7 +144,7 @@ export function useMetaData(
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

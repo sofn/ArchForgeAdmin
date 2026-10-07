@@ -12,6 +12,7 @@ import type { PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import type { FormItemProps } from "./types";
 import { deviceDetection } from "@pureadmin/utils";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useCategory() {
   const form = reactive({
@@ -21,6 +22,7 @@ export function useCategory() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const pagination = reactive<PaginationProps>({
     total: 0,
     pageSize: 10,
@@ -70,6 +72,7 @@ export function useCategory() {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getCmsCategoryList({
@@ -77,6 +80,7 @@ export function useCategory() {
         currentPage: pagination.currentPage,
         pageSize: pagination.pageSize
       });
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -84,7 +88,7 @@ export function useCategory() {
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

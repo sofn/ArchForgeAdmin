@@ -7,6 +7,7 @@ import { type Ref, reactive, ref, onMounted, toRaw } from "vue";
 import { getKeyList, useCopyToClipboard } from "@pureadmin/utils";
 import { getSystemLogsList, getSystemLogsDetail } from "@/api/system";
 import Info from "~icons/ri/question-line";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useRole(tableRef: Ref) {
   const form = reactive({
@@ -15,6 +16,7 @@ export function useRole(tableRef: Ref) {
   });
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const selectedNum = ref(0);
   const { copied, update } = useCopyToClipboard();
 
@@ -203,9 +205,11 @@ export function useRole(tableRef: Ref) {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getSystemLogsList(toRaw(form));
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -213,7 +217,7 @@ export function useRole(tableRef: Ref) {
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

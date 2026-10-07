@@ -22,6 +22,7 @@ import {
   saveRoleMenu
 } from "@/api/system";
 import { type Ref, reactive, ref, onMounted, h, toRaw, watch } from "vue";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useRole(treeRef: Ref) {
   const form = reactive({
@@ -36,6 +37,7 @@ export function useRole(treeRef: Ref) {
   const treeData = ref([]);
   const isShow = ref(false);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const isLinkage = ref(false);
   const treeSearchValue = ref();
   const switchLoadMap = ref({});
@@ -181,9 +183,11 @@ export function useRole(treeRef: Ref) {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getRoleList(toRaw(form));
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -191,7 +195,7 @@ export function useRole(treeRef: Ref) {
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

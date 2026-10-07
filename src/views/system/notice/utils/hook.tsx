@@ -13,6 +13,7 @@ import type { PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import type { FormItemProps } from "./types";
 import { deviceDetection } from "@pureadmin/utils";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useNotice() {
   const form = reactive({
@@ -23,6 +24,7 @@ export function useNotice() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const { tagStyle } = usePublicHooks();
   const pagination = reactive<PaginationProps>({
     total: 0,
@@ -101,6 +103,7 @@ export function useNotice() {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getNoticeList({
@@ -108,6 +111,7 @@ export function useNotice() {
         currentPage: pagination.currentPage,
         pageSize: pagination.pageSize
       });
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -115,7 +119,7 @@ export function useNotice() {
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

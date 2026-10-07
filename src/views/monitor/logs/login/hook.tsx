@@ -5,6 +5,7 @@ import { getLoginLogsList, deleteLoginLog, clearLoginLog } from "@/api/system";
 import { usePublicHooks } from "@/views/system/hooks";
 import type { PaginationProps } from "@pureadmin/table";
 import { type Ref, reactive, ref, onMounted, toRaw } from "vue";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useRole(tableRef: Ref) {
   const form = reactive({
@@ -14,6 +15,7 @@ export function useRole(tableRef: Ref) {
   });
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const selectedNum = ref(0);
   const { tagStyle } = usePublicHooks();
 
@@ -132,6 +134,7 @@ export function useRole(tableRef: Ref) {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getLoginLogsList({
@@ -139,6 +142,7 @@ export function useRole(tableRef: Ref) {
         currentPage: pagination.currentPage,
         pageSize: pagination.pageSize
       });
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -146,7 +150,7 @@ export function useRole(tableRef: Ref) {
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

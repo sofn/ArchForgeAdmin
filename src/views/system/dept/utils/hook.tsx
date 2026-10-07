@@ -13,6 +13,7 @@ import { addDialog } from "@/components/ReDialog";
 import { reactive, ref, onMounted, h } from "vue";
 import type { FormItemProps } from "../utils/types";
 import { cloneDeep, isAllEmpty, deviceDetection } from "@pureadmin/utils";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useDept() {
   const form = reactive({
@@ -23,6 +24,7 @@ export function useDept() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const { tagStyle } = usePublicHooks();
 
   const columns: TableColumnList = [
@@ -78,9 +80,11 @@ export function useDept() {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getDeptList(); // 这里是返回一维数组结构，前端自行处理成树结构，返回格式要求：唯一id加父节点parentId，parentId取父节点id
+      if (!isLatest()) return;
       if (code === 0) {
         let newData = data;
         if (!isAllEmpty(form.name)) {
@@ -94,7 +98,7 @@ export function useDept() {
         dataList.value = handleTree(newData); // 处理成树结构
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

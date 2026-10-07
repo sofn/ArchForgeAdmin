@@ -46,6 +46,7 @@ import {
   reactive,
   onMounted
 } from "vue";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useUser(tableRef: Ref, treeRef: Ref) {
   const form = reactive({
@@ -59,6 +60,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   const ruleFormRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   // 上传头像信息
   const avatarInfo = ref();
   const switchLoadMap = ref({});
@@ -281,9 +283,11 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const { code, data } = await getUserList(toRaw(form));
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -291,7 +295,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 

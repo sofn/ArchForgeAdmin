@@ -15,6 +15,7 @@ import { reactive, ref, onMounted, h, toRaw } from "vue";
 import type { FormItemProps } from "./types";
 import { deviceDetection } from "@pureadmin/utils";
 import { hasPerms } from "@/utils/auth";
+import { latestRequest } from "@/utils/latestRequest";
 
 export function useArticle() {
   const form = reactive({
@@ -25,6 +26,7 @@ export function useArticle() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+  const searchTicket = latestRequest();
   const pagination = reactive<PaginationProps>({
     total: 0,
     pageSize: 10,
@@ -83,6 +85,7 @@ export function useArticle() {
   }
 
   async function onSearch() {
+    const isLatest = searchTicket();
     loading.value = true;
     try {
       const status = form.status === "" ? null : Number(form.status);
@@ -92,6 +95,7 @@ export function useArticle() {
         currentPage: pagination.currentPage,
         pageSize: pagination.pageSize
       });
+      if (!isLatest()) return;
       if (code === 0) {
         dataList.value = data.list;
         pagination.total = data.total;
@@ -99,7 +103,7 @@ export function useArticle() {
         pagination.currentPage = data.currentPage;
       }
     } finally {
-      loading.value = false;
+      if (isLatest()) loading.value = false;
     }
   }
 
