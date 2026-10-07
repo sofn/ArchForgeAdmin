@@ -84,6 +84,7 @@ const {
     <PureTableBar title="定时任务列表" :columns="columns" @refresh="onSearch">
       <template #buttons>
         <el-button
+          v-perms="'system:scheduler-job:add'"
           type="primary"
           :icon="useRenderIcon(AddFill)"
           @click="openDialog('新增')"
@@ -113,6 +114,7 @@ const {
         >
           <template #operation="{ row }">
             <el-button
+              v-perms="'system:scheduler-job:edit'"
               link
               type="primary"
               :size="size"
@@ -123,6 +125,7 @@ const {
             </el-button>
             <el-button
               v-if="row.status === STATUS_RUNNING"
+              v-perms="'system:scheduler-job:edit'"
               link
               type="warning"
               :size="size"
@@ -133,6 +136,7 @@ const {
             </el-button>
             <el-button
               v-else
+              v-perms="'system:scheduler-job:edit'"
               link
               type="success"
               :size="size"
@@ -142,6 +146,7 @@ const {
               恢复
             </el-button>
             <el-button
+              v-perms="'system:scheduler-job:edit'"
               link
               type="primary"
               :size="size"
@@ -160,6 +165,7 @@ const {
               日志
             </el-button>
             <el-button
+              v-perms="'system:scheduler-job:remove'"
               link
               type="danger"
               :size="size"

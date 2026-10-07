@@ -26,6 +26,8 @@ declare global {
     roles?: Array<string>;
     /** 按钮级别权限设置 `可选` */
     auths?: Array<string>;
+    /** 持有任一权限才能进入（静态路由不经后端菜单过滤，用它守住直接输入 URL）`可选` */
+    perms?: Array<string>;
     /** 路由组件缓存（开启 `true`、关闭 `false`）`可选` */
     keepAlive?: boolean;
     /** 内嵌的`iframe`链接 `可选` */
@@ -98,6 +100,8 @@ declare global {
       showLink?: boolean;
       /** 菜单升序排序，值越高排的越后（只针对顶级路由）`可选` */
       rank?: number;
+      /** 持有任一权限才能进入（直接输入 URL 也受此限制）`可选` */
+      perms?: Array<string>;
     };
     /** 子路由配置项 */
     children?: Array<RouteChildrenConfigsTable>;

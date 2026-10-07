@@ -114,20 +114,21 @@ export function useMetaTable() {
 
   async function onSearch() {
     loading.value = true;
-    const { code, data } = await getMetaTableList({
-      ...toRaw(form),
-      currentPage: pagination.currentPage,
-      pageSize: pagination.pageSize
-    });
-    if (code === 0) {
-      dataList.value = data.list;
-      pagination.total = data.total;
-      pagination.pageSize = data.pageSize;
-      pagination.currentPage = data.currentPage;
-    }
-    setTimeout(() => {
+    try {
+      const { code, data } = await getMetaTableList({
+        ...toRaw(form),
+        currentPage: pagination.currentPage,
+        pageSize: pagination.pageSize
+      });
+      if (code === 0) {
+        dataList.value = data.list;
+        pagination.total = data.total;
+        pagination.pageSize = data.pageSize;
+        pagination.currentPage = data.currentPage;
+      }
+    } finally {
       loading.value = false;
-    }, 300);
+    }
   }
 
   const router = useRouter();
@@ -154,7 +155,7 @@ export function useMetaTable() {
   async function handleCopy(row: MetaTable) {
     try {
       const { data } = await assertOk(copyMetaTable(row.tableCode));
-      message(`已复制元表格"${row.tableName}"，新表格ID：${data}`, {
+      message(`已复制元表格"${row.tableName}"，新表格编码：${data}`, {
         type: "success"
       });
       await onSearch();

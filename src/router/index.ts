@@ -33,6 +33,7 @@ import {
 import {
   type DataInfo,
   userKey,
+  hasAnyPerm,
   removeToken,
   multipleTabsKey
 } from "@/utils/auth";
@@ -151,6 +152,9 @@ router.beforeEach((to: ToRouteType, _from) => {
   if (Cookies.get(multipleTabsKey) && userInfo) {
     // 无权限跳转403页面
     if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
+      return { path: "/error/403" };
+    }
+    if (!hasAnyPerm(to.meta?.perms)) {
       return { path: "/error/403" };
     }
     // 开启隐藏首页后在浏览器地址栏手动输入首页welcome路由则跳转到404页面

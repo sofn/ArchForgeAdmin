@@ -71,7 +71,8 @@ export default [
     component: () => import("@/views/meta-table/design/index.vue"),
     meta: {
       title: "元表格设计",
-      showLink: false
+      showLink: false,
+      perms: ["meta-table:add", "meta-table:edit"]
     }
   }
 ] satisfies Array<RouteConfigsTable>;

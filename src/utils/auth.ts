@@ -150,3 +150,7 @@ export const hasPerms = (value: string | Array<string>): boolean => {
     : isIncludeAllChildren(value, permissions);
   return isAuths ? true : false;
 };
+
+/** 持有任一权限即可（不传 = 无要求）。静态路由不经后端菜单过滤，用它守住直接输入 URL 的访问 */
+export const hasAnyPerm = (perms?: Array<string>): boolean =>
+  !perms || perms.some(perm => hasPerms(perm));

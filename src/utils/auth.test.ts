@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { cookieSet, storageSet } = vi.hoisted(() => ({
+const { cookieSet, storageSet, user } = vi.hoisted(() => ({
   cookieSet: vi.fn(),
-  storageSet: vi.fn()
+  storageSet: vi.fn(),
+  user: { permissions: [] as string[] }
 }));
 
 vi.mock("js-cookie", () => ({
@@ -16,7 +17,10 @@ vi.mock("@/store/modules/user", () => ({
     SET_USERNAME: vi.fn(),
     SET_NICKNAME: vi.fn(),
     SET_ROLES: vi.fn(),
-    SET_PERMS: vi.fn()
+    SET_PERMS: vi.fn(),
+    get permissions() {
+      return user.permissions;
+    }
   })
 }));
 vi.mock("@pureadmin/utils", () => ({
@@ -29,7 +33,7 @@ vi.mock("@pureadmin/utils", () => ({
   isIncludeAllChildren: vi.fn()
 }));
 
-import { setToken, TokenKey, multipleTabsKey } from "./auth";
+import { setToken, TokenKey, multipleTabsKey, hasAnyPerm } from "./auth";
 
 describe("setToken cookies", () => {
   beforeEach(() => {
@@ -66,5 +70,27 @@ describe("setToken cookies", () => {
     const attrs = cookieSet.mock.calls.find(call => call[0] === TokenKey)?.[2];
     expect(attrs.expires).toBeGreaterThan(0);
     expect(attrs.expires).toBeLessThan(1);
+  });
+});
+
+describe("hasAnyPerm (direct-URL guard for static pages)", () => {
+  it("lets a page without requirements through", () => {
+    user.permissions = [];
+    expect(hasAnyPerm(undefined)).toBe(true);
+  });
+
+  it("needs only one of the listed permissions", () => {
+    user.permissions = ["meta-table:edit"];
+    expect(hasAnyPerm(["meta-table:add", "meta-table:edit"])).toBe(true);
+  });
+
+  it("refuses a user holding none of them", () => {
+    user.permissions = ["system:user:list"];
+    expect(hasAnyPerm(["meta-table:add", "meta-table:edit"])).toBe(false);
+  });
+
+  it("honours the super-admin wildcard", () => {
+    user.permissions = ["*"];
+    expect(hasAnyPerm(["meta-table:add"])).toBe(true);
   });
 });
