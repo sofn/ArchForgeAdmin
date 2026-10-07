@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, h } from "vue";
+import { ref, computed, h, toRef } from "vue";
 import { tableRules } from "../utils/rule";
 import type { TableFormProps, MetaColumn } from "../utils/types";
 import { cloneDeep } from "lodash-es";
@@ -21,13 +21,17 @@ const props = defineProps({
       status: 1,
       columns: []
     })
-  }
+  },
+  /** 由页面告知是否在编辑已有元表格（以前靠数据库 id 推断，而元表格已改用 tableCode 定位） */
+  editing: { type: Boolean, default: false }
 });
 
 const ruleFormRef = ref();
-const newFormInline = ref<TableFormProps["formInline"]>(props.formInline);
+// 跟随页面传入的对象：设计页先用默认值挂载表单，再换成按 tableCode 拉到的详情——
+// 以前 ref() 只抓住了最初那份默认值，编辑页显示空表单、保存也会提交空内容
+const newFormInline = toRef(props, "formInline");
 
-const isEdit = computed(() => !!newFormInline.value.id);
+const isEdit = computed(() => props.editing);
 
 const dataTypeOptions = [
   { label: "文本", value: "STRING" },

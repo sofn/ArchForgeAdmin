@@ -146,7 +146,7 @@ const handleGenerate = async (row: any) => {
               修改
             </el-button>
             <el-button
-              v-if="hasPerms(['meta-table:edit'])"
+              v-if="hasPerms(['meta-table:add'])"
               class="reset-margin"
               link
               type="primary"

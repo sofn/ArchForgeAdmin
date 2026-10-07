@@ -151,7 +151,11 @@ function closeTabAndBack() {
           </div>
         </div>
       </template>
-      <TableForm ref="tableFormRef" :form-inline="formInline" />
+      <TableForm
+        ref="tableFormRef"
+        :form-inline="formInline"
+        :editing="isEdit"
+      />
     </el-card>
   </div>
 </template>
