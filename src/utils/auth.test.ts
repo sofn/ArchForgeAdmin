@@ -57,11 +57,20 @@ describe("setToken cookies", () => {
     expect(attrsOf(multipleTabsKey)).toMatchObject({ sameSite: "strict" });
   });
 
-  it("marks the cookie Secure only over HTTPS so plain-HTTP dev keeps working", () => {
-    setToken(login);
+  // the two protocols are pinned explicitly — re-deriving the expectation from window.location (as before) would
+  // mirror the implementation and pass whatever it does
+  it("does not mark the cookie Secure over plain HTTP, so local dev keeps working", () => {
+    withUrl("http://localhost:8848/", () => setToken(login));
 
     const attrs = cookieSet.mock.calls.find(call => call[0] === TokenKey)?.[2];
-    expect(attrs.secure).toBe(window.location.protocol === "https:");
+    expect(attrs.secure).toBe(false);
+  });
+
+  it("marks the cookie Secure over HTTPS", () => {
+    withUrl("https://admin.example.com/", () => setToken(login));
+
+    const attrs = cookieSet.mock.calls.find(call => call[0] === TokenKey)?.[2];
+    expect(attrs.secure).toBe(true);
   });
 
   it("keeps the session cookie expiry derived from the token", () => {
@@ -94,3 +103,17 @@ describe("hasAnyPerm (direct-URL guard for static pages)", () => {
     expect(hasAnyPerm(["meta-table:add"])).toBe(true);
   });
 });
+
+function withUrl(url: string, run: () => void) {
+  const previous = window.location.href;
+  (
+    window as unknown as { happyDOM: { setURL(u: string): void } }
+  ).happyDOM.setURL(url);
+  try {
+    run();
+  } finally {
+    (
+      window as unknown as { happyDOM: { setURL(u: string): void } }
+    ).happyDOM.setURL(previous);
+  }
+}
