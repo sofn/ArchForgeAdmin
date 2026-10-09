@@ -143,7 +143,6 @@ menus:
   pureVideoFrame: 视频帧截取-wasm版
   pureWavesurfer: 音频可视化
   pureRipple: 波纹(Ripple)
-  pureMqtt: MQTT客户端(mqtt)
   pureOptimize: 防抖、截流、复制、长按指令
   pureVerify: 图形验证码
   pureWatermark: 水印
@@ -179,7 +178,6 @@ menus:
   pureSwiper: Swiper插件
   pureVirtualList: 虚拟列表
   purePdf: PDF预览
-  pureExcel: 导出Excel
   pureInfiniteScroll: 表格无限滚动
   pureSensitive: 敏感词过滤
   purePinyin: 汉语拼音

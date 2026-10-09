@@ -77,7 +77,6 @@
     "localforage": "^1.10.0",
     "mint-filter": "^4.0.3",
     "mitt": "^3.0.1",
-    "mqtt": "4.3.7",
     "nprogress": "^0.2.0",
     "path-browserify": "^1.0.1",
     "pinia": "^4.0.2",
@@ -106,8 +105,7 @@
     "vuedraggable": "^4.1.0",
     "vxe-table": "4.6.25",
     "wavesurfer.js": "^7.12.11",
-    "xgplayer": "^3.0.26",
-    "xlsx": "^0.18.5"
+    "xgplayer": "^3.0.26"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",

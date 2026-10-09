@@ -11,14 +11,6 @@ export default {
   },
   children: [
     {
-      path: "/able/mqtt-client",
-      name: "MqttClient",
-      component: () => import("@/views/able/mqtt-client.vue"),
-      meta: {
-        title: $t("menus.pureMqtt")
-      }
-    },
-    {
       path: "/able/verify",
       name: "Verify",
       component: () => import("@/views/able/verify.vue"),
@@ -48,14 +40,6 @@ export default {
       component: () => import("@/views/able/download.vue"),
       meta: {
         title: $t("menus.pureDownload")
-      }
-    },
-    {
-      path: "/able/excel",
-      name: "Excel",
-      component: () => import("@/views/able/excel.vue"),
-      meta: {
-        title: $t("menus.pureExcel")
       }
     },
     {

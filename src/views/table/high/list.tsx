@@ -4,7 +4,6 @@ import Header from "./header/index.vue";
 import RowDrag from "./drag/row/index.vue";
 import ColumnDrag from "./drag/column/index.vue";
 import Contextmenu from "./contextmenu/index.vue";
-import Excel from "./excel/index.vue";
 import Watermark from "./watermark/index.vue";
 import Print from "./prints/index.vue";
 import Echarts from "./echarts/index.vue";
@@ -55,12 +54,6 @@ export const list = [
     content: rendContent("contextmenu"),
     title: "右键菜单",
     component: Contextmenu
-  },
-  {
-    key: "excel",
-    content: rendContent("excel"),
-    title: "导出excel",
-    component: Excel
   },
   {
     key: "print",
